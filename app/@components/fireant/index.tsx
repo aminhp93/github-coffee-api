@@ -1,13 +1,16 @@
 import { LIST_FIREANT_API } from "../../constants";
 import Request from "../request";
 
-const FireantPage = () => {
-  console.log("wirchat page");
+const FireantPage = ({ allResponses, response }: any) => {
   return (
     <div>
       <div>Fireant</div>
       <br />
-      <Request data={LIST_FIREANT_API} />
+      <Request
+        data={LIST_FIREANT_API}
+        allResponses={allResponses}
+        response={response}
+      />
     </div>
   );
 };

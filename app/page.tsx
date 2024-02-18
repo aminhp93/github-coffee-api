@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRequestStore } from "./store";
 import axios from "axios";
 import { Box } from "@mui/material";
@@ -25,24 +25,26 @@ const TestResult = dynamic(() => import("./@components/test-result"), {
 });
 
 export default function Home() {
-  const [data, setData] = useState(null);
   const request = useRequestStore((s) => s.request);
+  const response = useRequestStore((s) => s.response);
+  const setResponse = useRequestStore((s) => s.setResponse);
+  const allResponses = useRequestStore((s) => s.allResponses);
 
   useEffect(() => {
     const init = async () => {
       try {
         const res = await axios(getRequest(TOKEN, request)!);
         const result = { ...res, url: request!.url, status: "success" };
-        setData(result.data);
+        setResponse(result);
       } catch (err: any) {
         const errorResult = { ...err, url: request!.url, status: "failed" };
-        setData(errorResult);
+        setResponse(errorResult);
       }
     };
     if (request) {
       init();
     }
-  }, [request]);
+  }, [request, setResponse]);
 
   return (
     <Box
@@ -54,15 +56,15 @@ export default function Home() {
       }}
     >
       <Box sx={{ flex: 1, minWidth: 0, overflow: "auto", height: "100%" }}>
-        <Wichart />
+        <Wichart response={response} allResponses={allResponses} />
         <hr />
-        <Fireant />
+        <Fireant response={response} allResponses={allResponses} />
       </Box>
       <Box sx={{ flex: 1, overflow: "auto" }}>
         <Box sx={{ height: "500px", overflow: "auto" }}>
           <Response
             requestData={getRequest(TOKEN, request)}
-            responseData={data}
+            responseData={response}
           />
         </Box>
         <hr />

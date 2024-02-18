@@ -5,7 +5,7 @@ import { Box } from "@mui/material";
 export default function Response({ requestData, responseData }: any) {
   return (
     <>
-      {responseData ? (
+      {responseData && requestData ? (
         <>
           <Box
             sx={{

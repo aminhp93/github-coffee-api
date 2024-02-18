@@ -1,28 +1,37 @@
 import { Button, Box, styled } from "@mui/material";
-// import red color from mui
-import { yellow, green } from "@mui/material/colors";
+import { red, green } from "@mui/material/colors";
 import { useRequestStore } from "../store";
 
-const Request = ({ data }: any) => {
-  console.log("wirchat page");
+const Request = ({ data, allResponses, response }: any) => {
   return (
     <StyledBox>
       {data.map((i: any) => {
-        return <RequestItem key={i.url} item={i} />;
+        // find response for each request
+        const finalResponse =
+          allResponses.find((r: any) => r.url === i.url) ||
+          (response?.url && response.url === i.url ? response : null);
+
+        return <RequestItem key={i.url} item={i} response={finalResponse} />;
       })}
     </StyledBox>
   );
 };
 
-const RequestItem = ({ item }: any) => {
+const RequestItem = ({ item, response }: any) => {
   const setRequest = useRequestStore((s) => s.setRequest);
 
   const handleClick = () => {
     setRequest(item);
   };
 
+  const className = response
+    ? response.status === "success"
+      ? "success"
+      : "failed"
+    : "";
+
   return (
-    <Box>
+    <Box className={className}>
       <Box>{item.name}</Box>
       <Box
         sx={{
@@ -50,9 +59,18 @@ export default Request;
 
 const StyledBox = styled(Box)(({ theme }) => ({
   "& > div:nth-of-type(even)": {
-    backgroundColor: green[200],
+    backgroundColor: theme.palette.grey[200],
   },
   "& > div:nth-of-type(odd)": {
-    backgroundColor: yellow[200],
+    backgroundColor: theme.palette.grey[300],
+  },
+  "& > div": {
+    padding: "10px",
+    "&.success": {
+      backgroundColor: green[200],
+    },
+    "&.failed": {
+      backgroundColor: red[200],
+    },
   },
 }));
