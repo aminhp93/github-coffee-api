@@ -1,4 +1,4 @@
-import { LIST_FIREANT_API } from "../constants";
+import { LIST_FIREANT_API } from "../../constants";
 import Request from "../request";
 
 const FireantPage = () => {

@@ -1,0 +1,16 @@
+/* add boxSizing border-box to whole project */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* set height to 100% */
+html,
+body,
+#root {
+  height: 100%;
+}

@@ -1,4 +1,4 @@
-import { LIST_WICHART_API } from "../constants";
+import { LIST_WICHART_API } from "../../constants";
 import Request from "../request";
 
 const WichartPage = () => {
