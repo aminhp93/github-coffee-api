@@ -38,6 +38,17 @@ const Home = () => {
     (async () => {
       try {
         const res = await axios(getRequest(TOKEN, request?.url)!);
+
+        // find item by url
+        const found = LIST_API.map((i) => i.request)
+          .flat()
+          .find((i) => i.url === request.url);
+
+        console.log("found", found);
+        if (found?.parseResponse) {
+          found.parseResponse.parse(res.data);
+        }
+
         const result = { ...res, url: request.url, status: "success" };
         setResponse(result);
       } catch (err: any) {

@@ -8,4 +8,5 @@ export type Request = {
   url: string;
   name: string;
   id: number;
+  parseResponse?: any;
 };
