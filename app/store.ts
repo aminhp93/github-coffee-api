@@ -1,14 +1,19 @@
 import { create } from "zustand";
 import { produce } from "immer";
-import { RequestType } from "./schema";
+import { RequestType, ResponseType } from "./schema";
+
+export interface ParsedResponse extends ResponseType {
+  url: string;
+  status: "success" | "failed";
+}
 
 export type RequestStore = {
   request: RequestType | null;
   setRequest: (data: RequestType) => void;
-  response: any;
-  setResponse: (data: any) => void;
-  allResponses: any;
-  setAllResponses: (data: any) => void;
+  response: ResponseType | null;
+  setResponse: (data: ResponseType) => void;
+  allResponses: ParsedResponse[];
+  setAllResponses: (data: ParsedResponse[]) => void;
   clearStore: () => void;
 };
 

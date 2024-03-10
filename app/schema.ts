@@ -5,4 +5,7 @@ const RequestSchema = z.object({
   url: z.string(),
 });
 
+const ResponseSchema = z.any();
+
 export type RequestType = z.infer<typeof RequestSchema>;
+export type ResponseType = z.infer<typeof ResponseSchema>;

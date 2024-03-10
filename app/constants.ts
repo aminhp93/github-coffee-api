@@ -3,7 +3,7 @@ export const TOKEN =
 
 export const LIST_WICHART_API = [
   {
-    url: "https://wifeed1.vn/api/thong-tin-co-phieu/danh-sach-ma-chung-khoan?loaidn=1&san=HOSE",
+    url: "https://wifeed.vn/api/thong-tin-co-phieu/danh-sach-ma-chung-khoan?loaidn=1&san=HOSE",
     name: "Danh sách mã chứng khoán",
     id: 1,
   },
@@ -84,5 +84,18 @@ export const LIST_FIREANT_API = [
     url: "https://restv2.fireant.vn/symbols/VPB/historical-quotes?startDate=2021-02-14&endDate=2024-02-14&offset=0&limit=20",
     name: "Historical Quotes",
     id: 14,
+  },
+];
+
+export const LIST_API = [
+  {
+    id: "wichart",
+    label: "Wichart",
+    request: LIST_WICHART_API,
+  },
+  {
+    id: "fireant",
+    label: "Fireant",
+    request: LIST_FIREANT_API,
   },
 ];

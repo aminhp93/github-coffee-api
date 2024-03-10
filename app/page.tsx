@@ -1,49 +1,50 @@
 "use client";
 
+// Import libraries
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
-import { useRequestStore } from "./store";
 import axios from "axios";
-import { Box } from "@mui/material";
+import {
+  Box,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from "@mui/material";
+import { ExpandMore } from "@mui/icons-material";
+
+// Import local files
 import { getRequest } from "./utils";
-import { TOKEN } from "./constants";
+import { TOKEN, LIST_API } from "./constants";
+import Request from "../@core/components/request";
+import { useRequestStore } from "./store";
 
-const Wichart = dynamic(() => import("./@components/wichart"), {
+const Response = dynamic(() => import("../@core/components/response"), {
   ssr: false,
 });
 
-const Fireant = dynamic(() => import("./@components/fireant"), {
+const TestResult = dynamic(() => import("../@core/components/test-result"), {
   ssr: false,
 });
 
-const Response = dynamic(() => import("./@components/response"), {
-  ssr: false,
-});
-
-const TestResult = dynamic(() => import("./@components/test-result"), {
-  ssr: false,
-});
-
-export default function Home() {
+const Home = () => {
   const request = useRequestStore((s) => s.request);
   const response = useRequestStore((s) => s.response);
   const setResponse = useRequestStore((s) => s.setResponse);
   const allResponses = useRequestStore((s) => s.allResponses);
 
   useEffect(() => {
-    const init = async () => {
+    if (!request) return;
+
+    (async () => {
       try {
-        const res = await axios(getRequest(TOKEN, request)!);
-        const result = { ...res, url: request!.url, status: "success" };
+        const res = await axios(getRequest(TOKEN, request?.url)!);
+        const result = { ...res, url: request.url, status: "success" };
         setResponse(result);
       } catch (err: any) {
-        const errorResult = { ...err, url: request!.url, status: "failed" };
+        const errorResult = { ...err, url: request.url, status: "failed" };
         setResponse(errorResult);
       }
-    };
-    if (request) {
-      init();
-    }
+    })();
   }, [request, setResponse]);
 
   return (
@@ -56,14 +57,32 @@ export default function Home() {
       }}
     >
       <Box sx={{ flex: 1, minWidth: 0, overflow: "auto", height: "100%" }}>
-        <Wichart response={response} allResponses={allResponses} />
-        <hr />
-        <Fireant response={response} allResponses={allResponses} />
+        {LIST_API.map((item) => (
+          <Accordion key={item.id}>
+            <AccordionSummary
+              expandIcon={<ExpandMore />}
+              aria-controls="panel1-content"
+              id="panel1-header"
+            >
+              {item.label}
+            </AccordionSummary>
+            <AccordionDetails>
+              <Request
+                requestList={item.request}
+                response={response}
+                allResponses={allResponses}
+              />
+            </AccordionDetails>
+          </Accordion>
+        ))}
       </Box>
       <Box sx={{ flex: 1, overflow: "auto" }}>
         <Box sx={{ height: "500px", overflow: "auto" }}>
           <Response
-            requestData={getRequest(TOKEN, request)}
+            requestObject={{
+              token: TOKEN,
+              url: request?.url,
+            }}
             responseData={response}
           />
         </Box>
@@ -74,4 +93,6 @@ export default function Home() {
       </Box>
     </Box>
   );
-}
+};
+
+export default Home;

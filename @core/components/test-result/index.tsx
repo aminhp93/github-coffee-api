@@ -2,26 +2,35 @@
 
 import axios from "axios";
 import { Button, Box } from "@mui/material";
-import { LIST_FIREANT_API, LIST_WICHART_API, TOKEN } from "../constants";
-import { useRequestStore } from "../store";
-import { getRequest } from "../utils";
+import {
+  LIST_FIREANT_API,
+  LIST_WICHART_API,
+  TOKEN,
+} from "../../../app/constants";
+import { useRequestStore } from "../../../app/store";
+import { getRequest } from "../../../app/utils";
 
-export default function Home() {
+type PromiseItem = {
+  url: string;
+  promise: Promise<any>; // Replace 'any' with the actual type if you know it
+};
+
+export default function TestResult() {
   const setAllResponses = useRequestStore((s) => s.setAllResponses);
   const clearStore = useRequestStore((s) => s.clearStore);
 
   const handleTest = () => {
-    const listPromise: any = [];
+    const listPromise: PromiseItem[] = [];
 
     [...LIST_WICHART_API, ...LIST_FIREANT_API].forEach((item) => {
       listPromise.push({
         url: item.url,
-        promise: axios(getRequest(TOKEN, item)!),
+        promise: axios(getRequest(TOKEN, item?.url)!),
       });
     });
 
     Promise.all(
-      listPromise.map((item: any) => {
+      listPromise.map((item: PromiseItem) => {
         return item.promise
           .then((res: any) => ({ ...res, url: item.url, status: "success" }))
           .catch((err: any) => ({ ...err, url: item.url, status: "failed" }));
