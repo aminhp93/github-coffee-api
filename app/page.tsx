@@ -18,11 +18,11 @@ import { TOKEN, LIST_API } from "./constants";
 import Request from "../@core/components/request";
 import { useRequestStore } from "./store";
 
-const Response = dynamic(() => import("../@core/components/response"), {
+const Response = dynamic(() => import("@/@core/components/response"), {
   ssr: false,
 });
 
-const TestResult = dynamic(() => import("../@core/components/test-result"), {
+const TestResult = dynamic(() => import("@/@core/components/test-result"), {
   ssr: false,
 });
 
