@@ -25,7 +25,7 @@ import { getRequest } from "./utils";
 import { TOKEN, LIST_API } from "./constants";
 import Request from "@/@core/components/request";
 import Chart from "@/@core/components/chart";
-import Table from "@/@core/components/table";
+import AppTable from "./components/AppTable";
 import { useRequestStore } from "./store";
 
 const Response = dynamic(() => import("@/@core/components/response"), {
@@ -98,7 +98,7 @@ const Home = () => {
 
   return (
     <StyledBoxRoot>
-      <Box sx={{ flex: 1, minWidth: 0, overflow: "auto", height: "100%" }}>
+      <StyledBoxListApi>
         {LIST_API.map((item) => (
           <Accordion key={item.id}>
             <AccordionSummary
@@ -117,7 +117,7 @@ const Home = () => {
             </AccordionDetails>
           </Accordion>
         ))}
-      </Box>
+      </StyledBoxListApi>
       <Box sx={{ flex: 1, overflow: "auto" }}>
         <Box sx={{ height: "500px", overflow: "auto" }}>
           <ToggleButtonGroup size="small" {...control} aria-label="Small sizes">
@@ -133,7 +133,7 @@ const Home = () => {
             />
           )}
 
-          {display === "table" && <Table />}
+          {display === "table" && <AppTable />}
 
           {display === "chart" && <Chart />}
         </Box>
@@ -151,6 +151,13 @@ const StyledBoxRoot = styled(Box)({
   gap: "20px",
   padding: "20px",
   height: "100vh",
+});
+
+const StyledBoxListApi = styled(Box)({
+  flex: 1,
+  minWidth: 0,
+  overflow: "auto",
+  height: "100%",
 });
 
 export default Home;
