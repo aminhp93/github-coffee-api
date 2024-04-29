@@ -23,12 +23,12 @@ import {
 // Import local files
 import { getRequest } from "./utils";
 import { TOKEN, LIST_API } from "./constants";
-import Request from "@/@core/components/request";
+import RequestComponent from "@/@core/components/request";
 import Chart from "@/@core/components/chart";
 import AppTable from "./components/AppTable";
 import { useRequestStore } from "./store";
 
-const Response = dynamic(() => import("@/@core/components/response"), {
+const ResponseComponent = dynamic(() => import("@/@core/components/response"), {
   ssr: false,
 });
 
@@ -62,7 +62,7 @@ const Home = () => {
           found.parseResponse.parse(res.data);
         }
 
-        const result = { ...res, url: request.url, status: "success" };
+        const result = { ...res, url: request.url, status: "success" as const };
         setResponse(result);
       } catch (err: any) {
         const errorResult = { ...err, url: request.url, status: "failed" };
@@ -109,7 +109,7 @@ const Home = () => {
               {item.label}
             </AccordionSummary>
             <AccordionDetails>
-              <Request
+              <RequestComponent
                 requestList={item.request}
                 response={response}
                 allResponses={allResponses}
@@ -124,12 +124,12 @@ const Home = () => {
             {children}
           </ToggleButtonGroup>
           {display === "raw-api" && (
-            <Response
+            <ResponseComponent
               requestObject={{
                 token: TOKEN,
                 url: request?.url,
               }}
-              responseData={response}
+              response={response}
             />
           )}
 

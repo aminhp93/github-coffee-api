@@ -3,8 +3,10 @@ import { useRequestStore } from "../store";
 import { GridColDef } from "@mui/x-data-grid";
 
 const AppTable = () => {
-  //   const request = useRequestStore((s) => s.request);
+  const request = useRequestStore((s) => s.request);
   const response = useRequestStore((s) => s.response);
+
+  console.log(request);
 
   const listWatchlist = response?.data;
 

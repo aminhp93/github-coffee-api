@@ -2,16 +2,15 @@ import { Box, styled } from "@mui/material";
 import { red, green } from "@mui/material/colors";
 import RequestItem from "./RequestItem";
 import { Request } from "./types";
-import { ParsedResponse } from "../../../app/store";
-import { ResponseType } from "../../../app/schema";
+import { Response } from "../response/types";
 
 type Props = {
   requestList: Request[];
-  allResponses: ParsedResponse[];
-  response: ResponseType;
+  allResponses: Response[];
+  response: Response | null;
 };
 
-const RequestComp = ({ requestList, allResponses, response }: Props) => {
+const RequestComponent = ({ requestList, allResponses, response }: Props) => {
   return (
     <StyledBox>
       {requestList.map((i) => {
@@ -20,13 +19,15 @@ const RequestComp = ({ requestList, allResponses, response }: Props) => {
           allResponses.find((r) => r.url === i.url) ??
           (response?.url && response.url === i.url ? response : null);
 
+        if (!finalResponse) return null;
+
         return <RequestItem key={i.url} request={i} response={finalResponse} />;
       })}
     </StyledBox>
   );
 };
 
-export default RequestComp;
+export default RequestComponent;
 
 const StyledBox = styled(Box)(({ theme }) => ({
   "& > div:nth-of-type(even)": {
