@@ -41,7 +41,7 @@ export const LIST_FIREANT_API: Request[] = [
     id: 4,
   },
   {
-    url: "https://restv2.fireant.vn/posts?symbol=VPB&type=1&offset=0&limit=20",
+    url: "https://restv2.fireant.vn/posts?symbol=HHV&type=1&offset=0&limit=20",
     name: "Posts",
     id: 5,
   },
