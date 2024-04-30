@@ -101,12 +101,23 @@ const Dashboard = () => {
     (async () => {
       console.log(OBJ_FIREANT_API);
       try {
-        const res = await axios(
-          getRequest(TOKEN, OBJ_FIREANT_API["Posts"].url)!
-        );
-        console.log(res);
-        const mappedRes = mapData(res.data);
-        setData(mappedRes);
+        const listUrls = [
+          "https://restv2.fireant.vn/posts?symbol=HHV&type=1&offset=0&limit=20",
+          "https://restv2.fireant.vn/posts?symbol=VPB&type=1&offset=0&limit=20",
+        ];
+
+        const listPromises = listUrls.map((url) => {
+          return axios(getRequest(TOKEN, url)!).then((res) => {
+            return {
+              url,
+              data: res.data,
+            };
+          });
+        });
+
+        const listRes = await Promise.all(listPromises);
+
+        setData(listRes);
 
         setOptions((prev) => {
           return {
@@ -117,19 +128,17 @@ const Dashboard = () => {
               // min: Math.min(...mappedRes.map((i) => i[1])),
               min: 0,
               // max value of second element in array mappedRes
-              max: Math.max(...mappedRes.map((i) => i[1])),
+              max: Math.max(...listRes.map((i) => i.data.length)),
             },
-            series: [
-              {
+            series: listRes.map((item) => {
+              return {
                 type: "line",
-                name: "",
-                data: mappedRes,
-              },
-            ],
+                name: item.url,
+                data: mapData(item.data),
+              };
+            }),
           };
         });
-
-        // find item by url
       } catch (err: any) {}
     })();
   }, []);
@@ -190,6 +199,7 @@ const Dashboard = () => {
           {children2}
         </ToggleButtonGroup>
       </Box>
+      <Box></Box>
       {display === "raw-api" && <div>Raw data</div>}
       {display === "table" && <div>Table</div>}
       {display === "chart" && (
