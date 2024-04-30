@@ -6,8 +6,8 @@ import { Response } from "../components/response/types";
 export type RequestStore = {
   request: Request | null;
   setRequest: (data: Request) => void;
-  response: ResponseType | null;
-  setResponse: (data: ResponseType) => void;
+  response: Response | null;
+  setResponse: (data: Response) => void;
   allResponses: Response[];
   setAllResponses: (data: Response[]) => void;
   clearStore: () => void;

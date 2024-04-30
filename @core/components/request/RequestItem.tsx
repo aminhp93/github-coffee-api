@@ -1,15 +1,16 @@
-import { useRequestStore, ParsedResponse } from "../../../app/store";
+import { useRequestStore } from "../../../app/store";
 import { Button, Box } from "@mui/material";
 import { Request } from "./types";
+import { Response } from "../response/types";
 
-const getClassName = (response: ParsedResponse) => {
+const getClassName = (response: Response) => {
   if (!response) return "";
   return response.status === "success" ? "success" : "failed";
 };
 
 type Props = {
   request: Request;
-  response: ParsedResponse;
+  response: Response;
 };
 
 const RequestItem = ({ request, response }: Props) => {
