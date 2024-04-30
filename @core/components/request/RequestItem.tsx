@@ -1,4 +1,4 @@
-import { useRequestStore } from "../../../app/store";
+import { useRequestStore } from "../../store/request";
 import { Button, Box } from "@mui/material";
 import { Request } from "./types";
 import { Response } from "../response/types";

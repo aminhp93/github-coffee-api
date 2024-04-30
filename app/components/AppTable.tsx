@@ -1,5 +1,5 @@
 import Table from "@/@core/components/table";
-import { useRequestStore } from "../store";
+import { useRequestStore } from "@/@core/store/request";
 import { GridColDef } from "@mui/x-data-grid";
 
 const AppTable = () => {

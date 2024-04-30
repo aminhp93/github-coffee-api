@@ -16,14 +16,23 @@ const httpFireantService = axios.create({
   baseURL: "https://restv2.fireant.vn",
 });
 
+// add intercepter httpFireantService response is res.data
+httpFireantService.interceptors.response.use((res) => {
+  return res.data;
+});
+
 const FireantUrls = {
   fundamental: (symbol: string) => `/${symbol}/fundamental`,
-  posts: (symbol: string, type: number, offset: number, limit: number) =>
-    `/posts?symbol=${symbol}&type=${type}&offset=${offset}&limit=${limit}`,
+  posts: (
+    symbol: string,
+    type: number = 1,
+    offset: number = 0,
+    limit: number = 20
+  ) => `/posts?symbol=${symbol}&type=${type}&offset=${offset}&limit=${limit}`,
   watchlists: "/me/watchlists",
 };
 
-const FireantRequest = {
+const FireantService = {
   fundamental: (symbol: string): Promise<FundamentalResponse> => {
     return httpFireantService({
       url: FireantUrls.fundamental(symbol),
@@ -31,9 +40,9 @@ const FireantRequest = {
   },
   posts: (
     symbol: string,
-    type: number,
-    offset: number,
-    limit: number
+    type?: number,
+    offset?: number,
+    limit?: number
   ): Promise<PostsResponse> => {
     return httpFireantService({
       url: FireantUrls.posts(symbol, type, offset, limit),
@@ -46,4 +55,4 @@ const FireantRequest = {
   },
 };
 
-export default FireantRequest;
+export default FireantService;

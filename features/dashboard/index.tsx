@@ -1,16 +1,7 @@
 "use client";
 
+import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import {
-  Box,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  ToggleButton,
-  ToggleButtonGroup,
-  styled,
-} from "@mui/material";
-import {
-  ExpandMore,
   DataObject,
   TableRows,
   ShowChart,
@@ -19,20 +10,15 @@ import {
 import { useEffect, useState } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import { LIST_FIREANT_API, TOKEN } from "@/app/constants";
-import { getRequest } from "@/app/utils";
-import { keyBy } from "lodash";
 
 import { DATA } from "./constants";
-import { PostType } from "@/app/fireant/schema";
-import axios from "axios";
-
-const OBJ_FIREANT_API = keyBy(LIST_FIREANT_API, "name");
+import { PostsItem } from "@/@core/services/fireant/schema";
+import FireantService from "@/@core/services/fireant/Fireant.service";
 
 type Display = "raw-api" | "table" | "chart";
 type Display2 = "fireant-news";
 
-const mapData = (data: PostType[]) => {
+const mapData = (data: PostsItem[]) => {
   // group all data have same day like 2021-10-10
   const xxx = data.reduce((acc, item) => {
     const date = new Date(item.date).toISOString().split("T")[0];
@@ -41,13 +27,7 @@ const mapData = (data: PostType[]) => {
     }
     acc[date].push(item);
     return acc;
-  }, {} as Record<string, PostType[]>);
-
-  console.log(xxx);
-
-  // return data.map((item) => {
-  //   return [Date.parse(item.date), item.postID];
-  // });
+  }, {} as Record<string, PostsItem[]>);
 
   return Object.keys(xxx).map((key) => {
     return [Date.parse(key), xxx[key].length];
@@ -99,23 +79,24 @@ const Dashboard = () => {
 
   useEffect(() => {
     (async () => {
-      console.log(OBJ_FIREANT_API);
       try {
-        const listUrls = [
-          "https://restv2.fireant.vn/posts?symbol=HHV&type=1&offset=0&limit=20",
-          "https://restv2.fireant.vn/posts?symbol=VPB&type=1&offset=0&limit=20",
-        ];
+        const listSymbols = ["HHV", "VPB"];
 
-        const listPromises = listUrls.map((url) => {
-          return axios(getRequest(TOKEN, url)!).then((res) => {
+        const listPromises = listSymbols.map((symbol) => {
+          return FireantService.posts(symbol).then((res) => {
             return {
-              url,
-              data: res.data,
+              symbol,
+              data: res,
             };
           });
         });
 
         const listRes = await Promise.all(listPromises);
+        console.log(listRes);
+
+        //  const mappedRes = listRes.map((item) => {
+        //     return [item.symbol, item.data.length];
+        //   })
 
         setData(listRes);
 
@@ -124,16 +105,14 @@ const Dashboard = () => {
             ...prev,
             yAxis: {
               ...prev.yAxis,
-              // min value of second element in array mappedRes
-              // min: Math.min(...mappedRes.map((i) => i[1])),
               min: 0,
               // max value of second element in array mappedRes
-              max: Math.max(...listRes.map((i) => i.data.length)),
+              // max: Math.max(...mappedRes.map((i) => i[1])),
             },
             series: listRes.map((item) => {
               return {
                 type: "line",
-                name: item.url,
+                name: item.symbol,
                 data: mapData(item.data),
               };
             }),

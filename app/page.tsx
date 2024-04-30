@@ -21,12 +21,14 @@ import {
 } from "@mui/icons-material";
 
 // Import local files
-import { getRequest } from "./utils";
-import { TOKEN, LIST_API } from "./constants";
+import { getRequest } from "@/@core/services/utils";
+import { TOKEN } from "@/@core/services/fireant/Fireant.constants";
+
+import { LIST_API } from "./constants";
 import RequestComponent from "@/@core/components/request";
 import Chart from "@/@core/components/chart";
 import AppTable from "./components/AppTable";
-import { useRequestStore } from "./store";
+import { useRequestStore } from "@/@core/store/request";
 
 const ResponseComponent = dynamic(() => import("@/@core/components/response"), {
   ssr: false,

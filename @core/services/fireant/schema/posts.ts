@@ -39,7 +39,7 @@ const ImageSchema = z.object({
   imageUrl: z.nullable(z.string()),
 });
 
-const PostSchema = z.object({
+export const PostItemSchema = z.object({
   postID: z.number(),
   userName: z.nullable(z.string()),
   user: UserSchema,
@@ -90,4 +90,7 @@ const PostSchema = z.object({
   isInfographic: z.boolean(),
 });
 
+const PostSchema = z.array(PostItemSchema);
+
+export type PostsItem = z.infer<typeof PostItemSchema>;
 export type PostsResponse = z.infer<typeof PostSchema>;
