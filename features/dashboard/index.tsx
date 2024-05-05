@@ -1,22 +1,16 @@
 "use client";
 
-import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
-import {
-  DataObject,
-  TableRows,
-  ShowChart,
-  Newspaper,
-} from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 
-import { DATA } from "./constants";
+// import { DATA } from "./constants";
 import { PostsItem } from "@/@core/services/fireant/schema";
 import FireantService from "@/@core/services/fireant/Fireant.service";
-
-type Display = "raw-api" | "table" | "chart";
-type Display2 = "fireant-news";
+import Header from "./Header";
+import SubHeader from "./SubHeader";
+import useConfigStore from "./useConfigStore";
+import useFireantStore from "@/@core/services/fireant/useFireantStore";
 
 const mapData = (data: PostsItem[]) => {
   // group all data have same day like 2021-10-10
@@ -35,11 +29,10 @@ const mapData = (data: PostsItem[]) => {
 };
 
 const Dashboard = () => {
-  const [display, setDisplay] = useState<Display>("raw-api");
+  const config = useConfigStore((state) => state.config);
+  // const [data, setData] = useState<any>(DATA);
+  const selectedWatchlist = useFireantStore((state) => state.selectedWatchlist);
 
-  const [display2, setDisplay2] = useState<Display2>("fireant-news");
-
-  const [data, setData] = useState<any>(DATA);
   const [options, setOptions] = useState<Highcharts.Options>({
     // chart: {
     //   zoomType: "x",
@@ -51,8 +44,8 @@ const Dashboard = () => {
     xAxis: [
       {
         type: "datetime",
+        gridLineWidth: 1,
         tickInterval: 24 * 3600 * 1000,
-        // min: 0,
         // get current tme and subtract 1 week
         min: new Date().getTime() - 604800000,
 
@@ -60,6 +53,9 @@ const Dashboard = () => {
         max: new Date().getTime() + 86400000,
       },
     ],
+    tooltip: {
+      shared: true,
+    },
     yAxis: {
       title: {
         text: "Exchange rate",
@@ -80,7 +76,9 @@ const Dashboard = () => {
   useEffect(() => {
     (async () => {
       try {
-        const listSymbols = ["HHV", "VPB"];
+        // const listSymbols = ["HHV", "VPB"];
+        const listSymbols = selectedWatchlist?.symbols || [];
+        console.log(selectedWatchlist, listSymbols);
 
         const listPromises = listSymbols.map((symbol) => {
           return FireantService.posts(symbol).then((res) => {
@@ -92,13 +90,12 @@ const Dashboard = () => {
         });
 
         const listRes = await Promise.all(listPromises);
-        console.log(listRes);
 
         //  const mappedRes = listRes.map((item) => {
         //     return [item.symbol, item.data.length];
         //   })
 
-        setData(listRes);
+        // setData(listRes);
 
         setOptions((prev) => {
           return {
@@ -120,68 +117,46 @@ const Dashboard = () => {
         });
       } catch (err: any) {}
     })();
-  }, []);
+  }, [selectedWatchlist]);
 
-  const handleChange = (
-    event: React.MouseEvent<HTMLElement>,
-    newAlignment: Display
-  ) => {
-    setDisplay(newAlignment);
-  };
+  console.log({ selectedWatchlist });
 
-  const handleChange2 = (
-    event: React.MouseEvent<HTMLElement>,
-    newAlignment: Display2
-  ) => {
-    setDisplay2(newAlignment);
-  };
+  useEffect(() => {
+    setOptions((prev) => {
+      // convert config.timeRange to miliseconds like '1m' => 30 * 24 * 3600 * 1000
+      let subTractTimestamp = 0;
+      if (config.timeRange === "1m") {
+        subTractTimestamp = 30 * 24 * 3600 * 1000;
+      } else if (config.timeRange === "1w") {
+        subTractTimestamp = 7 * 24 * 3600 * 1000;
+      } else if (config.timeRange === "1d") {
+        subTractTimestamp = 24 * 3600 * 1000;
+      }
 
-  const control = {
-    value: display,
-    onChange: handleChange,
-    exclusive: true,
-  };
-
-  const control2 = {
-    value: display2,
-    onChange: handleChange2,
-    exclusive: true,
-  };
-
-  const children = [
-    <ToggleButton value="raw-api" key="raw-api">
-      <DataObject />
-    </ToggleButton>,
-    <ToggleButton value="table" key="table">
-      <TableRows />
-    </ToggleButton>,
-    <ToggleButton value="chart" key="chart">
-      <ShowChart />
-    </ToggleButton>,
-  ];
-
-  const children2 = [
-    <ToggleButton value="fireant-news" key="fireant-news">
-      <Newspaper />
-    </ToggleButton>,
-  ];
+      return {
+        ...prev,
+        xAxis: [
+          {
+            type: "datetime",
+            gridLineWidth: 1,
+            tickInterval: 24 * 3600 * 1000,
+            min: new Date().getTime() - subTractTimestamp,
+            // get current time and add 1 day
+            max: new Date().getTime() + 86400000,
+          },
+        ],
+      };
+    });
+  }, [config.timeRange]);
 
   return (
     <div>
-      <h1>Dashboard</h1>
-      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-        <ToggleButtonGroup size="small" {...control} aria-label="Small sizes">
-          {children}
-        </ToggleButtonGroup>
+      <Header />
+      <SubHeader />
 
-        <ToggleButtonGroup size="small" {...control2} aria-label="Small sizes">
-          {children2}
-        </ToggleButtonGroup>
-      </Box>
-      <Box></Box>
-      {display === "raw-api" && <div>Raw data</div>}
-      {display === "table" && <div>Table</div>}
-      {display === "chart" && (
+      {config.displayType === "raw-data" && <div>Raw data</div>}
+      {config.displayType === "table" && <div>Table</div>}
+      {config.displayType === "chart" && (
         <HighchartsReact highcharts={Highcharts} options={options} />
       )}
     </div>

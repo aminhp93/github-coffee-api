@@ -1,13 +1,16 @@
 import { z } from "zod";
 
-export const WatchlistsSchema = z.array(
-  z.object({
-    watchlistID: z.number(),
-    name: z.string(),
-    userName: z.string(),
-    symbols: z.array(z.string()),
-    displayIndex: z.number(),
-  })
-);
+const Item = z.object({
+  watchlistID: z.number(),
+  name: z.string(),
+  userName: z.string(),
+  symbols: z.array(z.string()),
+  displayIndex: z.number(),
+});
+
+export const WatchlistsSchema = z.array(Item);
 
 export type WatchlistsResponse = z.infer<typeof WatchlistsSchema>;
+
+export type WatchlistItem = z.infer<typeof Item>;
+export type Watchlists = WatchlistsResponse;

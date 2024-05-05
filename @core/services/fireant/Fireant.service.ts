@@ -23,12 +23,8 @@ httpFireantService.interceptors.response.use((res) => {
 
 const FireantUrls = {
   fundamental: (symbol: string) => `/${symbol}/fundamental`,
-  posts: (
-    symbol: string,
-    type: number = 1,
-    offset: number = 0,
-    limit: number = 20
-  ) => `/posts?symbol=${symbol}&type=${type}&offset=${offset}&limit=${limit}`,
+  posts: (symbol: string, type: number, offset: number, limit: number) =>
+    `/posts?symbol=${symbol}&type=${type}&offset=${offset}&limit=${limit}`,
   watchlists: "/me/watchlists",
 };
 
@@ -40,9 +36,9 @@ const FireantService = {
   },
   posts: (
     symbol: string,
-    type?: number,
-    offset?: number,
-    limit?: number
+    type: number = 1,
+    offset: number = 0,
+    limit: number = 50
   ): Promise<PostsResponse> => {
     return httpFireantService({
       url: FireantUrls.posts(symbol, type, offset, limit),

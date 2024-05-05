@@ -34,7 +34,6 @@ export default function TestResult() {
       })
     )
       .then((res) => {
-        console.log(res); // This will now log an array of objects, each containing the response/error, the URL of the request, and the status ('success' or 'failed')
         setAllResponses(res);
       })
       .catch((err) => {

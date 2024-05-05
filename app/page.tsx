@@ -59,7 +59,6 @@ const Home = () => {
           .flat()
           .find((i) => i.url === request.url);
 
-        console.log("found", found);
         if (found?.parseResponse) {
           found.parseResponse.parse(res.data);
         }
