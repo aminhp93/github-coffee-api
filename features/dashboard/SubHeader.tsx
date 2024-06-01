@@ -36,11 +36,13 @@ const SubHeader = () => {
 
   return (
     <Box>
-      {config.company === "fireant" && (
+      {(config.category === "fireant-post" ||
+        config.category === "fireant-news") && (
         <Box>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">Watchlist</InputLabel>
             <Select
+              size="small"
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={selectedWatchlist?.watchlistID || ("" as any)}

@@ -33,9 +33,13 @@ export const LIST_DISPLAY = [
   },
 ];
 
-export const LIST_COMPANY = [
+export const LIST_CATEGORY = [
   {
-    value: "fireant",
+    value: "fireant-post",
+    label: Newspaper,
+  },
+  {
+    value: "fireant-news",
     label: Newspaper,
   },
   {

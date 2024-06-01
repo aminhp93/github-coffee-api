@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
+import { Box } from "@mui/material";
 
 // import { DATA } from "./constants";
 import { PostsItem } from "@/@core/services/fireant/schema";
@@ -11,6 +12,7 @@ import Header from "./Header";
 import SubHeader from "./SubHeader";
 import useConfigStore from "./useConfigStore";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
+import { RawData } from "./types";
 
 const mapData = (data: PostsItem[]) => {
   // group all data have same day like 2021-10-10
@@ -32,6 +34,7 @@ const Dashboard = () => {
   const config = useConfigStore((state) => state.config);
   // const [data, setData] = useState<any>(DATA);
   const selectedWatchlist = useFireantStore((state) => state.selectedWatchlist);
+  const [rawData, setRawData] = useState<RawData>([]);
 
   const [options, setOptions] = useState<Highcharts.Options>({
     // chart: {
@@ -76,50 +79,84 @@ const Dashboard = () => {
   useEffect(() => {
     (async () => {
       try {
-        // const listSymbols = ["HHV", "VPB"];
-        const listSymbols = selectedWatchlist?.symbols || [];
-        console.log(selectedWatchlist, listSymbols);
+        if (config.category === "fireant-news") {
+          // const listSymbols = ["HHV", "VPB"];
+          const listSymbols = selectedWatchlist?.symbols || [];
+          console.log(selectedWatchlist, listSymbols);
 
-        const listPromises = listSymbols.map((symbol) => {
-          return FireantService.posts(symbol).then((res) => {
+          const listPromises = listSymbols.map((symbol) => {
+            return FireantService.news(symbol).then((res) => {
+              return {
+                symbol,
+                data: res,
+              };
+            });
+          });
+
+          const listRes = await Promise.all(listPromises);
+
+          setRawData(listRes);
+
+          setOptions((prev) => {
             return {
-              symbol,
-              data: res,
+              ...prev,
+              yAxis: {
+                ...prev.yAxis,
+                min: 0,
+                // max value of second element in array mappedRes
+                // max: Math.max(...mappedRes.map((i) => i[1])),
+              },
+              series: listRes.map((item) => {
+                return {
+                  type: "line",
+                  name: item.symbol,
+                  data: mapData(item.data),
+                };
+              }),
             };
           });
-        });
+        } else if (config.category === "fireant-post") {
+          // const listSymbols = ["HHV", "VPB"];
+          const listSymbols = selectedWatchlist?.symbols || [];
+          console.log(selectedWatchlist, listSymbols);
 
-        const listRes = await Promise.all(listPromises);
-
-        //  const mappedRes = listRes.map((item) => {
-        //     return [item.symbol, item.data.length];
-        //   })
-
-        // setData(listRes);
-
-        setOptions((prev) => {
-          return {
-            ...prev,
-            yAxis: {
-              ...prev.yAxis,
-              min: 0,
-              // max value of second element in array mappedRes
-              // max: Math.max(...mappedRes.map((i) => i[1])),
-            },
-            series: listRes.map((item) => {
+          const listPromises = listSymbols.map((symbol) => {
+            return FireantService.posts(symbol).then((res) => {
               return {
-                type: "line",
-                name: item.symbol,
-                data: mapData(item.data),
+                symbol,
+                data: res,
               };
-            }),
-          };
-        });
+            });
+          });
+
+          const listRes = await Promise.all(listPromises);
+
+          setRawData(listRes);
+
+          setOptions((prev) => {
+            return {
+              ...prev,
+              yAxis: {
+                ...prev.yAxis,
+                min: 0,
+                // max value of second element in array mappedRes
+                // max: Math.max(...mappedRes.map((i) => i[1])),
+              },
+              series: listRes.map((item) => {
+                return {
+                  type: "line",
+                  name: item.symbol,
+                  data: mapData(item.data),
+                };
+              }),
+            };
+          });
+        }
       } catch (err: any) {}
     })();
-  }, [selectedWatchlist]);
+  }, [selectedWatchlist, config.category, config.timeRange]);
 
-  console.log({ selectedWatchlist });
+  console.log({ selectedWatchlist, rawData, config: config.category });
 
   useEffect(() => {
     setOptions((prev) => {
@@ -150,16 +187,29 @@ const Dashboard = () => {
   }, [config.timeRange]);
 
   return (
-    <div>
+    <Box>
       <Header />
-      <SubHeader />
-
-      {config.displayType === "raw-data" && <div>Raw data</div>}
-      {config.displayType === "table" && <div>Table</div>}
-      {config.displayType === "chart" && (
-        <HighchartsReact highcharts={Highcharts} options={options} />
-      )}
-    </div>
+      <Box mt={2}>
+        <SubHeader />
+      </Box>
+      <Box mt={2}>
+        {config.displayType === "raw-data" && (
+          <Box
+            sx={{
+              height: "300px",
+              overflow: "auto",
+            }}
+          >
+            <pre>{JSON.stringify(rawData, null, 2)}</pre>
+            Raw data
+          </Box>
+        )}
+        {config.displayType === "table" && <Box>Table</Box>}
+        {config.displayType === "chart" && (
+          <HighchartsReact highcharts={Highcharts} options={options} />
+        )}
+      </Box>
+    </Box>
   );
 };
 
