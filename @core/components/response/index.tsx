@@ -1,22 +1,23 @@
 "use client";
 
 import { Box } from "@mui/material";
-import { getRequest } from "../../../app/utils";
-import { ResponseType } from "../../../app/schema";
+
+import { getRequest } from "../../services/utils";
+import { Response } from "./types";
 
 type Props = {
   requestObject: {
     token: string;
     url?: string;
   };
-  responseData: ResponseType;
+  response: Response | null;
 };
 
-const Response = ({ requestObject, responseData }: Props) => {
+const ResponseComponent = ({ requestObject, response }: Props) => {
   const requestData = getRequest(requestObject.token, requestObject.url);
   return (
     <>
-      {responseData && requestData ? (
+      {response && requestData ? (
         <Box
           sx={{
             display: "grid",
@@ -37,7 +38,7 @@ const Response = ({ requestObject, responseData }: Props) => {
           <Box>
             <Box>Response</Box>
             <Box>
-              <pre>{JSON.stringify(responseData, null, 2)}</pre>
+              <pre>{JSON.stringify(response, null, 2)}</pre>
             </Box>
           </Box>
         </Box>
@@ -48,4 +49,4 @@ const Response = ({ requestObject, responseData }: Props) => {
   );
 };
 
-export default Response;
+export default ResponseComponent;

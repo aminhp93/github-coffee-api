@@ -2,13 +2,10 @@
 
 import axios from "axios";
 import { Button, Box } from "@mui/material";
-import {
-  LIST_FIREANT_API,
-  LIST_WICHART_API,
-  TOKEN,
-} from "../../../app/constants";
-import { useRequestStore } from "../../../app/store";
-import { getRequest } from "../../../app/utils";
+import { LIST_FIREANT_API, LIST_WICHART_API } from "../../../app/constants";
+import { TOKEN } from "../../services/fireant/Fireant.constants";
+import { useRequestStore } from "../../store/request";
+import { getRequest } from "../../services/utils";
 
 type PromiseItem = {
   url: string;
@@ -37,7 +34,6 @@ export default function TestResult() {
       })
     )
       .then((res) => {
-        console.log(res); // This will now log an array of objects, each containing the response/error, the URL of the request, and the status ('success' or 'failed')
         setAllResponses(res);
       })
       .catch((err) => {
