@@ -1,7 +1,8 @@
 "use client";
 
 import { Box } from "@mui/material";
-import { getRequest } from "../../../app/utils";
+
+import { getRequest } from "../../services/utils";
 import { Response } from "./types";
 
 type Props = {

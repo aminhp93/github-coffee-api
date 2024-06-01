@@ -1,15 +1,10 @@
 import Table from "@/@core/components/table";
-import { useRequestStore } from "../store";
+import { useRequestStore } from "@/@core/store/request";
 import { GridColDef } from "@mui/x-data-grid";
 
 const AppTable = () => {
-  const request = useRequestStore((s) => s.request);
   const response = useRequestStore((s) => s.response);
-
-  console.log(request);
-
   const listWatchlist = response?.data;
-
   const selectedWatchlist = listWatchlist?.[0];
   //   convert response to rows
   const rows = selectedWatchlist?.symbols.map((symbol: any, index: number) => {

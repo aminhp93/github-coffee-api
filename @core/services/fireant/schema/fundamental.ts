@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// Fundamental
 export const FundamentalSchema = z.object({
   symbol: z.null(),
   companyType: z.number(),
@@ -23,15 +24,4 @@ export const FundamentalSchema = z.object({
   foreignOwnership: z.number(),
 });
 
-export const WatchlistSchema = z.array(
-  z.object({
-    watchlistID: z.number(),
-    name: z.string(),
-    userName: z.string(),
-    symbols: z.array(z.string()),
-    displayIndex: z.number(),
-  })
-);
-
-export type FundamentalType = z.infer<typeof FundamentalSchema>;
-export type WatchlistType = z.infer<typeof WatchlistSchema>;
+export type FundamentalResponse = z.infer<typeof FundamentalSchema>;

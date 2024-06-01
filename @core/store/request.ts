@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { produce } from "immer";
-import { Request } from "@/@core/components/request/types";
-import { Response } from "@/@core/components/response/types";
+import { Request } from "../components/request/types";
+import { Response } from "../components/response/types";
 
 export type RequestStore = {
   request: Request | null;

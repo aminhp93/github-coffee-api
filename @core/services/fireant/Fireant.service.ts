@@ -1,31 +1,52 @@
-import { FundamentalResponse } from "./Fireant.schema";
-import httpService from "../httpService";
+import axios from "axios";
+import { TOKEN } from "./Fireant.constants";
 
-const FireantUrl = {
-  Fundamental: (symbol: string) => `symbols/${symbol}/fundamental`,
-  Watchlists: "me/watchlists",
-  Posts: (symbol: string) => `posts?symbol=${symbol}&type=1&offset=0&limit=20`,
+import {
+  FundamentalResponse,
+  PostsResponse,
+  WatchlistsResponse,
+} from "./schema";
+
+const httpFireantService = axios.create({
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${TOKEN}`,
+  },
+  baseURL: "https://restv2.fireant.vn",
+});
+
+// add intercepter httpFireantService response is res.data
+httpFireantService.interceptors.response.use((res) => {
+  return res.data;
+});
+
+const FireantUrls = {
+  fundamental: (symbol: string) => `/${symbol}/fundamental`,
+  posts: (symbol: string, type: number, offset: number, limit: number) =>
+    `/posts?symbol=${symbol}&type=${type}&offset=${offset}&limit=${limit}`,
+  watchlists: "/me/watchlists",
 };
 
-const BASE_URL = "https://restv2.fireant.vn/";
-
 const FireantService = {
-  Fundamental: (symbol: string): Promise<FundamentalResponse> => {
-    return httpService({
-      method: "GET",
-      url: BASE_URL + FireantUrl.Fundamental(symbol),
+  fundamental: (symbol: string): Promise<FundamentalResponse> => {
+    return httpFireantService({
+      url: FireantUrls.fundamental(symbol),
     });
   },
-  Watchlists: () => {
-    return httpService({
-      method: "GET",
-      url: BASE_URL + FireantUrl.Watchlists,
+  posts: (
+    symbol: string,
+    type: number = 1,
+    offset: number = 0,
+    limit: number = 50
+  ): Promise<PostsResponse> => {
+    return httpFireantService({
+      url: FireantUrls.posts(symbol, type, offset, limit),
     });
   },
-  Posts: (symbol: string): Promise<any> => {
-    return httpService({
-      method: "GET",
-      url: BASE_URL + FireantUrl.Posts(symbol),
+  watchlists: (): Promise<WatchlistsResponse> => {
+    return httpFireantService({
+      url: FireantUrls.watchlists,
     });
   },
 };
