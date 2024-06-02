@@ -19,7 +19,6 @@ const SubHeader = () => {
   );
 
   const handleChange = (event: SelectChangeEvent) => {
-    console.log(event.target.value, watchlists);
     const wlObj = keyBy(watchlists, "watchlistID");
     setSelectedWatchlist(wlObj[event.target.value as string]);
   };
@@ -31,8 +30,6 @@ const SubHeader = () => {
     };
     init();
   }, [setWatchlists]);
-
-  console.log(watchlists, selectedWatchlist);
 
   return (
     <Box>

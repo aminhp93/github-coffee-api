@@ -16,7 +16,7 @@ type ConfigStore = {
 const useConfigStore = create<ConfigStore>((set) => ({
   config: {
     displayType: "raw-data",
-    timeRange: "1m",
+    timeRange: "1w",
     category: "fireant-post",
   },
   setConfig: (data) =>

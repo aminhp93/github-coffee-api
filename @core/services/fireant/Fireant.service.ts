@@ -43,7 +43,7 @@ const FireantService = {
     limit: number = DEFAULT_LIMIT
   ): Promise<NewsResponse> =>
     httpFireantService({
-      url: FireantUrls.posts(symbol, offset, limit),
+      url: FireantUrls.news(symbol, offset, limit),
     }),
   posts: (
     symbol: string,

@@ -6,43 +6,24 @@ import HighchartsReact from "highcharts-react-official";
 import { Box } from "@mui/material";
 
 // import { DATA } from "./constants";
-import { PostsItem } from "@/@core/services/fireant/schema";
 import FireantService from "@/@core/services/fireant/Fireant.service";
 import Header from "./Header";
 import SubHeader from "./SubHeader";
 import useConfigStore from "./useConfigStore";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import { RawData } from "./types";
-
-const mapData = (data: PostsItem[]) => {
-  // group all data have same day like 2021-10-10
-  const xxx = data.reduce((acc, item) => {
-    const date = new Date(item.date).toISOString().split("T")[0];
-    if (!acc[date]) {
-      acc[date] = [];
-    }
-    acc[date].push(item);
-    return acc;
-  }, {} as Record<string, PostsItem[]>);
-
-  return Object.keys(xxx).map((key) => {
-    return [Date.parse(key), xxx[key].length];
-  });
-};
+import { getRows, mapData } from "./utils";
+import DashboardTable from "./DashboardTable";
 
 const Dashboard = () => {
   const config = useConfigStore((state) => state.config);
-  // const [data, setData] = useState<any>(DATA);
   const selectedWatchlist = useFireantStore((state) => state.selectedWatchlist);
-  const [rawData, setRawData] = useState<RawData>([]);
 
+  const [rawData, setRawData] = useState<RawData>([]);
+  const [rows, setRows] = useState<any>([]);
   const [options, setOptions] = useState<Highcharts.Options>({
-    // chart: {
-    //   zoomType: "x",
-    // },
     title: {
-      text: "USD to EUR exchange rate over time",
-      align: "left",
+      text: undefined,
     },
     xAxis: [
       {
@@ -58,6 +39,23 @@ const Dashboard = () => {
     ],
     tooltip: {
       shared: true,
+      formatter: function () {
+        // Sort the points
+        const points: any = this.points;
+        (points || []).sort(function (a: any, b: any) {
+          return b && a && b.y! - a.y!;
+        });
+
+        // format x
+
+        // Generate the tooltip text
+        let tooltipText = "<b>" + this.x + "</b><br/>";
+        (points || []).forEach(function (point: any) {
+          tooltipText += point.series.name + ": " + point.y + "<br/>";
+        });
+
+        return tooltipText;
+      },
     },
     yAxis: {
       title: {
@@ -80,9 +78,7 @@ const Dashboard = () => {
     (async () => {
       try {
         if (config.category === "fireant-news") {
-          // const listSymbols = ["HHV", "VPB"];
           const listSymbols = selectedWatchlist?.symbols || [];
-          console.log(selectedWatchlist, listSymbols);
 
           const listPromises = listSymbols.map((symbol) => {
             return FireantService.news(symbol).then((res) => {
@@ -96,15 +92,13 @@ const Dashboard = () => {
           const listRes = await Promise.all(listPromises);
 
           setRawData(listRes);
-
+          setRows(getRows(listRes));
           setOptions((prev) => {
             return {
               ...prev,
               yAxis: {
                 ...prev.yAxis,
                 min: 0,
-                // max value of second element in array mappedRes
-                // max: Math.max(...mappedRes.map((i) => i[1])),
               },
               series: listRes.map((item) => {
                 return {
@@ -116,9 +110,7 @@ const Dashboard = () => {
             };
           });
         } else if (config.category === "fireant-post") {
-          // const listSymbols = ["HHV", "VPB"];
           const listSymbols = selectedWatchlist?.symbols || [];
-          console.log(selectedWatchlist, listSymbols);
 
           const listPromises = listSymbols.map((symbol) => {
             return FireantService.posts(symbol).then((res) => {
@@ -132,15 +124,13 @@ const Dashboard = () => {
           const listRes = await Promise.all(listPromises);
 
           setRawData(listRes);
-
+          setRows(getRows(listRes));
           setOptions((prev) => {
             return {
               ...prev,
               yAxis: {
                 ...prev.yAxis,
                 min: 0,
-                // max value of second element in array mappedRes
-                // max: Math.max(...mappedRes.map((i) => i[1])),
               },
               series: listRes.map((item) => {
                 return {
@@ -155,8 +145,6 @@ const Dashboard = () => {
       } catch (err: any) {}
     })();
   }, [selectedWatchlist, config.category, config.timeRange]);
-
-  console.log({ selectedWatchlist, rawData, config: config.category });
 
   useEffect(() => {
     setOptions((prev) => {
@@ -201,10 +189,9 @@ const Dashboard = () => {
             }}
           >
             <pre>{JSON.stringify(rawData, null, 2)}</pre>
-            Raw data
           </Box>
         )}
-        {config.displayType === "table" && <Box>Table</Box>}
+        {config.displayType === "table" && <DashboardTable rows={rows} />}
         {config.displayType === "chart" && (
           <HighchartsReact highcharts={Highcharts} options={options} />
         )}
