@@ -1,8 +1,9 @@
 import axios from "axios";
-import { TOKEN } from "./Fireant.constants";
+import { TOKEN, DEFAULT_OFFSET, DEFAULT_LIMIT } from "./Fireant.constants";
 
 import {
   FundamentalResponse,
+  NewsResponse,
   PostsResponse,
   WatchlistsResponse,
 } from "./schema";
@@ -23,25 +24,34 @@ httpFireantService.interceptors.response.use((res) => {
 
 const FireantUrls = {
   fundamental: (symbol: string) => `/${symbol}/fundamental`,
-  posts: (symbol: string, type: number, offset: number, limit: number) =>
-    `/posts?symbol=${symbol}&type=${type}&offset=${offset}&limit=${limit}`,
+  news: (symbol: string, offset: number, limit: number) =>
+    `posts?symbol=${symbol}&type=1&offset=${offset}&limit=${limit}`,
+  posts: (symbol: string, offset: number, limit: number) =>
+    `/posts?symbol=${symbol}&type=0&offset=${offset}&limit=${limit}`,
+
   watchlists: "/me/watchlists",
 };
 
 const FireantService = {
-  fundamental: (symbol: string): Promise<FundamentalResponse> => {
-    return httpFireantService({
+  fundamental: (symbol: string): Promise<FundamentalResponse> =>
+    httpFireantService({
       url: FireantUrls.fundamental(symbol),
-    });
-  },
+    }),
+  news: (
+    symbol: string,
+    offset: number = DEFAULT_OFFSET,
+    limit: number = DEFAULT_LIMIT
+  ): Promise<NewsResponse> =>
+    httpFireantService({
+      url: FireantUrls.news(symbol, offset, limit),
+    }),
   posts: (
     symbol: string,
-    type: number = 1,
-    offset: number = 0,
-    limit: number = 50
+    offset: number = DEFAULT_OFFSET,
+    limit: number = DEFAULT_LIMIT
   ): Promise<PostsResponse> => {
     return httpFireantService({
-      url: FireantUrls.posts(symbol, type, offset, limit),
+      url: FireantUrls.posts(symbol, offset, limit),
     });
   },
   watchlists: (): Promise<WatchlistsResponse> => {

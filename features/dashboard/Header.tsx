@@ -1,7 +1,7 @@
 import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import useConfigStore from "./useConfigStore";
-import { Display, Company, TimeRange } from "./types";
-import { LIST_DISPLAY, LIST_COMPANY, LIST_TIME_RANGE } from "./constants";
+import { Display, Category, TimeRange } from "./types";
+import { LIST_DISPLAY, LIST_CATEGORY, LIST_TIME_RANGE } from "./constants";
 
 const Header = () => {
   const config = useConfigStore((state) => state.config);
@@ -29,11 +29,11 @@ const Header = () => {
 
   const handleChangeCompany = (
     event: React.MouseEvent<HTMLElement>,
-    data: Company
+    data: Category
   ) => {
     setConfig({
       ...config,
-      company: data,
+      category: data,
     });
   };
 
@@ -50,17 +50,18 @@ const Header = () => {
   };
 
   const controlCompany = {
-    value: config.company,
+    value: config.category,
     onChange: handleChangeCompany,
     exclusive: true,
   };
 
   return (
     <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-      <ToggleButtonGroup size="small" {...controlDisplayType}>
-        {LIST_DISPLAY.map((item) => (
+      <ToggleButtonGroup size="small" {...controlCompany}>
+        {LIST_CATEGORY.map((item) => (
           <ToggleButton value={item.value} key={item.value}>
             {<item.label />}
+            {item.value}
           </ToggleButton>
         ))}
       </ToggleButtonGroup>
@@ -73,11 +74,10 @@ const Header = () => {
         ))}
       </ToggleButtonGroup>
 
-      <ToggleButtonGroup size="small" {...controlCompany}>
-        {LIST_COMPANY.map((item) => (
+      <ToggleButtonGroup size="small" {...controlDisplayType}>
+        {LIST_DISPLAY.map((item) => (
           <ToggleButton value={item.value} key={item.value}>
             {<item.label />}
-            {item.value}
           </ToggleButton>
         ))}
       </ToggleButtonGroup>
