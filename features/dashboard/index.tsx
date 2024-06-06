@@ -209,6 +209,8 @@ const Dashboard = () => {
     });
   }, [config.timeRange]);
 
+  console.log({ rawData, rows, options });
+
   return (
     <Box>
       <Header />

@@ -99,7 +99,38 @@ export const FireantColumns: GridColDef[] = [
 export const DevToColumns: GridColDef[] = [
   { field: "groupedDate", headerName: "Grouped Date", width: 150 },
   { field: "id", headerName: "id", width: 100, groupable: false },
-  { field: "title", headerName: "title", width: 100, groupable: false },
+  {
+    field: "comments_count",
+    headerName: "comments_count",
+    width: 100,
+    groupable: false,
+  },
+  {
+    field: "public_reactions_count",
+    headerName: "public_reactions_count",
+    width: 100,
+    groupable: false,
+  },
+  {
+    field: "reading_time",
+    headerName: "reading_time",
+    width: 100,
+    groupable: false,
+  },
+  {
+    field: "title",
+    headerName: "title",
+    groupable: false,
+    flex: 1,
+    renderCell: (params) => {
+      console.log(params);
+      return (
+        <a href={`https://dev.to/${params.row.path}`} target="_blank">
+          {params.value}
+        </a>
+      );
+    },
+  },
 ];
 
 export const CONFIG: {
