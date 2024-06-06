@@ -52,6 +52,10 @@ export const LIST_CATEGORY = [
     value: "dev-to",
     label: Newspaper,
   },
+  {
+    value: "one-housing",
+    label: Newspaper,
+  },
 ];
 
 export const LIST_TIME_RANGE = [
@@ -133,10 +137,34 @@ export const DevToColumns: GridColDef[] = [
   },
 ];
 
+export const OneHousingColumns: GridColDef[] = [
+  { field: "urgent_sale", headerName: "urgent_sale", width: 100 },
+  { field: "province", headerName: "province", width: 100 },
+  { field: "legal_total_area", headerName: "legal_total_area", width: 100 },
+  { field: "max_area", headerName: "max_area", width: 100 },
+  { field: "min_area", headerName: "min_area", width: 100 },
+  { field: "max_selling_price", headerName: "max_selling_price", width: 100 },
+  { field: "min_selling_price", headerName: "min_selling_price", width: 100 },
+  { field: "min_unit_price", headerName: "min_unit_price", width: 100 },
+  { field: "number_of_bedrooms", headerName: "number_of_bedrooms", width: 100 },
+  { field: "floor_number", headerName: "floor_number", width: 100 },
+  {
+    field: "view_count",
+    headerName: "view_count",
+    width: 100,
+    renderCell: (params) => {
+      return <div>{params.row.view_count.count}</div>;
+    },
+  },
+  { field: "district", headerName: "district", width: 100 },
+  { field: "district_code", headerName: "district_code", width: 100 },
+  { field: "project_name", headerName: "project_name", width: 100 },
+];
+
 export const CONFIG: {
   [key: string]: {
     columns: GridColDef[];
-    initialStateConfig: any;
+    initialStateConfig?: any;
   };
 } = {
   "fireant-post": {
@@ -162,5 +190,8 @@ export const CONFIG: {
         model: ["groupedDate"],
       },
     },
+  },
+  "one-housing": {
+    columns: OneHousingColumns,
   },
 };

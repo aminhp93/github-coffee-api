@@ -8,12 +8,19 @@ import { Box } from "@mui/material";
 // import { DATA } from "./constants";
 import FireantService from "@/@core/services/fireant/Fireant.service";
 import DevToService from "@/@core/services/dev-to/DevTo.service";
+import OneHousingService from "@/@core/services/one-housing/OneHousing.service";
 import Header from "./Header";
 import SubHeader from "./SubHeader";
 import useConfigStore from "./useConfigStore";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import { RawData } from "./types";
-import { getRows, mapData, mapDevToData, getDevToRows } from "./utils";
+import {
+  getRows,
+  mapData,
+  mapDevToData,
+  getDevToRows,
+  getOneHousingRows,
+} from "./utils";
 import DashboardTable from "./DashboardTable";
 import { CONFIG } from "./constants";
 
@@ -176,6 +183,16 @@ const Dashboard = () => {
               ],
             };
           });
+        } else if (config.category === "one-housing") {
+          const requestData = {
+            search_type: "RECOMMENDATION",
+            property_provider_source: ["SECONDARY"],
+            available_for_sale: true,
+          };
+
+          const res = await OneHousingService.list(1, requestData);
+          setRawData(res.data);
+          setRows(getOneHousingRows(res.data));
         }
       } catch (err: any) {}
     })();
