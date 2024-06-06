@@ -4,31 +4,16 @@ import {
   DataGridPremium,
   useGridApiRef,
   useKeepGroupedColumnsHidden,
-  GridColDef,
 } from "@mui/x-data-grid-premium";
 
-const DashboardTable = ({ rows }: any) => {
+const DashboardTable = ({ rows, initialStateConfig, columns }: any) => {
+  console.log(rows, initialStateConfig, columns);
   const apiRef = useGridApiRef();
 
   const initialState = useKeepGroupedColumnsHidden({
     apiRef,
-    initialState: {
-      rowGrouping: {
-        model: ["groupedSymbol"],
-      },
-    },
+    initialState: initialStateConfig,
   });
-
-  const columns: GridColDef[] = [
-    { field: "groupedSymbol", headerName: "Grouped Symbol", width: 150 },
-    { field: "postId", headerName: "postId", width: 100, groupable: false },
-    {
-      field: "originalContent",
-      headerName: "originalContent",
-      width: 100,
-      groupable: false,
-    },
-  ];
 
   return (
     <DataGridPremium

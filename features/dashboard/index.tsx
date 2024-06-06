@@ -7,13 +7,15 @@ import { Box } from "@mui/material";
 
 // import { DATA } from "./constants";
 import FireantService from "@/@core/services/fireant/Fireant.service";
+import DevToService from "@/@core/services/dev-to/DevTo.service";
 import Header from "./Header";
 import SubHeader from "./SubHeader";
 import useConfigStore from "./useConfigStore";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import { RawData } from "./types";
-import { getRows, mapData } from "./utils";
+import { getRows, mapData, mapDevToData, getDevToRows } from "./utils";
 import DashboardTable from "./DashboardTable";
+import { CONFIG } from "./constants";
 
 const Dashboard = () => {
   const config = useConfigStore((state) => state.config);
@@ -141,6 +143,39 @@ const Dashboard = () => {
               }),
             };
           });
+        } else if (config.category === "dev-to") {
+          const numberOfPages = 10;
+
+          const listPromises = Array.from({ length: numberOfPages }).map(
+            (_, index) => {
+              return DevToService.getStories(index + 1, "latest");
+            }
+          );
+
+          const listRes = await Promise.all(listPromises);
+          const flattenListRes = listRes.flat();
+          console.log(flattenListRes);
+
+          setRawData(flattenListRes);
+
+          setRows(getDevToRows(flattenListRes));
+
+          setOptions((prev) => {
+            return {
+              ...prev,
+              yAxis: {
+                ...prev.yAxis,
+                min: 0,
+              },
+              series: [
+                {
+                  type: "line",
+                  name: "Dev.to",
+                  data: mapDevToData(flattenListRes),
+                },
+              ],
+            };
+          });
         }
       } catch (err: any) {}
     })();
@@ -191,7 +226,13 @@ const Dashboard = () => {
             <pre>{JSON.stringify(rawData, null, 2)}</pre>
           </Box>
         )}
-        {config.displayType === "table" && <DashboardTable rows={rows} />}
+        {config.displayType === "table" && (
+          <DashboardTable
+            initialStateConfig={CONFIG[config.category].initialStateConfig}
+            columns={CONFIG[config.category].columns}
+            rows={rows}
+          />
+        )}
         {config.displayType === "chart" && (
           <HighchartsReact highcharts={Highcharts} options={options} />
         )}
