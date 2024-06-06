@@ -1,6 +1,7 @@
 // import { DATA } from "./constants";
 import { PostsItem } from "@/@core/services/fireant/schema";
 import { StoriesItem } from "@/@core/services/dev-to/DevTo.schema";
+import { ListResponseItem } from "@/@core/services/one-housing/OneHousing.schema";
 
 import { RawData } from "./types";
 
@@ -73,4 +74,11 @@ export const getDevToRows = (data: StoriesItem[]) => {
     };
   });
   return result;
+};
+
+export const getOneHousingRows = (data: ListResponseItem[]) => {
+  // data is array of object like [{postId: '1', originalContent: 'xxx'}, {postId: '2', originalContent: 'yyy'}]
+  // i want to convert it to array of object like [{groupedSymbol: 'AAPL', postId: '1', originalContent: 'xxx'}, {groupedSymbol: 'AAPL', postId: '2', originalContent: 'yyy'}]
+
+  return data;
 };
