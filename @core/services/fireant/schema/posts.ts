@@ -90,7 +90,7 @@ export const PostItemSchema = z.object({
   isInfographic: z.boolean(),
 });
 
-const PostSchema = z.array(PostItemSchema);
+export const PostSchema = z.array(PostItemSchema);
 
 export type PostsItem = z.infer<typeof PostItemSchema>;
 export type PostsResponse = z.infer<typeof PostSchema>;

@@ -19,7 +19,6 @@ const SubHeader = () => {
   );
 
   const handleChange = (event: SelectChangeEvent) => {
-    console.log(event.target.value, watchlists);
     const wlObj = keyBy(watchlists, "watchlistID");
     setSelectedWatchlist(wlObj[event.target.value as string]);
   };
@@ -32,15 +31,15 @@ const SubHeader = () => {
     init();
   }, [setWatchlists]);
 
-  console.log(watchlists, selectedWatchlist);
-
   return (
     <Box>
-      {config.company === "fireant" && (
+      {(config.category === "fireant-post" ||
+        config.category === "fireant-news") && (
         <Box>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">Watchlist</InputLabel>
             <Select
+              size="small"
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={selectedWatchlist?.watchlistID || ("" as any)}

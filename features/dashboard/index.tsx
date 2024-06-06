@@ -3,43 +3,36 @@
 import { useEffect, useState } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
+import { Box } from "@mui/material";
 
 // import { DATA } from "./constants";
-import { PostsItem } from "@/@core/services/fireant/schema";
 import FireantService from "@/@core/services/fireant/Fireant.service";
+import DevToService from "@/@core/services/dev-to/DevTo.service";
+import OneHousingService from "@/@core/services/one-housing/OneHousing.service";
 import Header from "./Header";
 import SubHeader from "./SubHeader";
 import useConfigStore from "./useConfigStore";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
-
-const mapData = (data: PostsItem[]) => {
-  // group all data have same day like 2021-10-10
-  const xxx = data.reduce((acc, item) => {
-    const date = new Date(item.date).toISOString().split("T")[0];
-    if (!acc[date]) {
-      acc[date] = [];
-    }
-    acc[date].push(item);
-    return acc;
-  }, {} as Record<string, PostsItem[]>);
-
-  return Object.keys(xxx).map((key) => {
-    return [Date.parse(key), xxx[key].length];
-  });
-};
+import { RawData } from "./types";
+import {
+  getRows,
+  mapData,
+  mapDevToData,
+  getDevToRows,
+  getOneHousingRows,
+} from "./utils";
+import DashboardTable from "./DashboardTable";
+import { CONFIG } from "./constants";
 
 const Dashboard = () => {
   const config = useConfigStore((state) => state.config);
-  // const [data, setData] = useState<any>(DATA);
   const selectedWatchlist = useFireantStore((state) => state.selectedWatchlist);
 
+  const [rawData, setRawData] = useState<RawData>([]);
+  const [rows, setRows] = useState<any>([]);
   const [options, setOptions] = useState<Highcharts.Options>({
-    // chart: {
-    //   zoomType: "x",
-    // },
     title: {
-      text: "USD to EUR exchange rate over time",
-      align: "left",
+      text: undefined,
     },
     xAxis: [
       {
@@ -55,6 +48,23 @@ const Dashboard = () => {
     ],
     tooltip: {
       shared: true,
+      formatter: function () {
+        // Sort the points
+        const points: any = this.points;
+        (points || []).sort(function (a: any, b: any) {
+          return b && a && b.y! - a.y!;
+        });
+
+        // format x
+
+        // Generate the tooltip text
+        let tooltipText = "<b>" + this.x + "</b><br/>";
+        (points || []).forEach(function (point: any) {
+          tooltipText += point.series.name + ": " + point.y + "<br/>";
+        });
+
+        return tooltipText;
+      },
     },
     yAxis: {
       title: {
@@ -76,50 +86,117 @@ const Dashboard = () => {
   useEffect(() => {
     (async () => {
       try {
-        // const listSymbols = ["HHV", "VPB"];
-        const listSymbols = selectedWatchlist?.symbols || [];
-        console.log(selectedWatchlist, listSymbols);
+        if (config.category === "fireant-news") {
+          const listSymbols = selectedWatchlist?.symbols || [];
 
-        const listPromises = listSymbols.map((symbol) => {
-          return FireantService.posts(symbol).then((res) => {
+          const listPromises = listSymbols.map((symbol) => {
+            return FireantService.news(symbol).then((res) => {
+              return {
+                symbol,
+                data: res,
+              };
+            });
+          });
+
+          const listRes = await Promise.all(listPromises);
+
+          setRawData(listRes);
+          setRows(getRows(listRes));
+          setOptions((prev) => {
             return {
-              symbol,
-              data: res,
+              ...prev,
+              yAxis: {
+                ...prev.yAxis,
+                min: 0,
+              },
+              series: listRes.map((item) => {
+                return {
+                  type: "line",
+                  name: item.symbol,
+                  data: mapData(item.data),
+                };
+              }),
             };
           });
-        });
+        } else if (config.category === "fireant-post") {
+          const listSymbols = selectedWatchlist?.symbols || [];
 
-        const listRes = await Promise.all(listPromises);
-
-        //  const mappedRes = listRes.map((item) => {
-        //     return [item.symbol, item.data.length];
-        //   })
-
-        // setData(listRes);
-
-        setOptions((prev) => {
-          return {
-            ...prev,
-            yAxis: {
-              ...prev.yAxis,
-              min: 0,
-              // max value of second element in array mappedRes
-              // max: Math.max(...mappedRes.map((i) => i[1])),
-            },
-            series: listRes.map((item) => {
+          const listPromises = listSymbols.map((symbol) => {
+            return FireantService.posts(symbol).then((res) => {
               return {
-                type: "line",
-                name: item.symbol,
-                data: mapData(item.data),
+                symbol,
+                data: res,
               };
-            }),
+            });
+          });
+
+          const listRes = await Promise.all(listPromises);
+
+          setRawData(listRes);
+          setRows(getRows(listRes));
+          setOptions((prev) => {
+            return {
+              ...prev,
+              yAxis: {
+                ...prev.yAxis,
+                min: 0,
+              },
+              series: listRes.map((item) => {
+                return {
+                  type: "line",
+                  name: item.symbol,
+                  data: mapData(item.data),
+                };
+              }),
+            };
+          });
+        } else if (config.category === "dev-to") {
+          const numberOfPages = 10;
+
+          const listPromises = Array.from({ length: numberOfPages }).map(
+            (_, index) => {
+              return DevToService.getStories(index + 1, "latest");
+            }
+          );
+
+          const listRes = await Promise.all(listPromises);
+          const flattenListRes = listRes.flat();
+          console.log(flattenListRes);
+
+          setRawData(flattenListRes);
+
+          setRows(getDevToRows(flattenListRes));
+
+          setOptions((prev) => {
+            return {
+              ...prev,
+              yAxis: {
+                ...prev.yAxis,
+                min: 0,
+              },
+              series: [
+                {
+                  type: "line",
+                  name: "Dev.to",
+                  data: mapDevToData(flattenListRes),
+                },
+              ],
+            };
+          });
+        } else if (config.category === "one-housing") {
+          const requestData = {
+            search_type: "RECOMMENDATION",
+            property_provider_source: ["SECONDARY"],
+            available_for_sale: true,
           };
-        });
+
+          const res = await OneHousingService.list(1, requestData);
+          setRawData(res.data);
+          setRows(getOneHousingRows(res.data));
+        }
       } catch (err: any) {}
     })();
-  }, [selectedWatchlist]);
-
-  console.log({ selectedWatchlist });
+  }, [selectedWatchlist, config.category, config.timeRange]);
 
   useEffect(() => {
     setOptions((prev) => {
@@ -149,17 +226,37 @@ const Dashboard = () => {
     });
   }, [config.timeRange]);
 
-  return (
-    <div>
-      <Header />
-      <SubHeader />
+  console.log({ rawData, rows, options });
 
-      {config.displayType === "raw-data" && <div>Raw data</div>}
-      {config.displayType === "table" && <div>Table</div>}
-      {config.displayType === "chart" && (
-        <HighchartsReact highcharts={Highcharts} options={options} />
-      )}
-    </div>
+  return (
+    <Box>
+      <Header />
+      <Box mt={2}>
+        <SubHeader />
+      </Box>
+      <Box mt={2}>
+        {config.displayType === "raw-data" && (
+          <Box
+            sx={{
+              height: "300px",
+              overflow: "auto",
+            }}
+          >
+            <pre>{JSON.stringify(rawData, null, 2)}</pre>
+          </Box>
+        )}
+        {config.displayType === "table" && (
+          <DashboardTable
+            initialStateConfig={CONFIG[config.category].initialStateConfig}
+            columns={CONFIG[config.category].columns}
+            rows={rows}
+          />
+        )}
+        {config.displayType === "chart" && (
+          <HighchartsReact highcharts={Highcharts} options={options} />
+        )}
+      </Box>
+    </Box>
   );
 };
 
