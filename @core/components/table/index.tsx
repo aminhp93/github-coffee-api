@@ -8,7 +8,7 @@ type Props = {
   apiRef?: any;
   rows: any[];
   columns: GridColDef[];
-  initialState: any;
+  initialState?: any;
 };
 
 export default function Table({ apiRef, rows, columns, initialState }: Props) {
