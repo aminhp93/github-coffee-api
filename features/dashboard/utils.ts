@@ -53,8 +53,6 @@ export const mapDevToData = (data: StoriesItem[]) => {
     return acc;
   }, {} as Record<string, StoriesItem[]>);
 
-  console.log(xxx);
-
   return Object.keys(xxx).map((key) => {
     return [Date.parse(key), xxx[key].length];
   });

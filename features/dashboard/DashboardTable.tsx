@@ -1,13 +1,13 @@
 "use client";
 
 import {
-  DataGridPremium,
   useGridApiRef,
   useKeepGroupedColumnsHidden,
 } from "@mui/x-data-grid-premium";
 
+import Table from "@/@core/components/table";
+
 const DashboardTable = ({ rows, initialStateConfig, columns }: any) => {
-  console.log(rows, initialStateConfig, columns);
   const apiRef = useGridApiRef();
 
   const initialState = useKeepGroupedColumnsHidden({
@@ -16,7 +16,7 @@ const DashboardTable = ({ rows, initialStateConfig, columns }: any) => {
   });
 
   return (
-    <DataGridPremium
+    <Table
       rows={rows}
       columns={columns}
       apiRef={apiRef}

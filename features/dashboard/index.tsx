@@ -161,7 +161,6 @@ const Dashboard = () => {
 
           const listRes = await Promise.all(listPromises);
           const flattenListRes = listRes.flat();
-          console.log(flattenListRes);
 
           setRawData(flattenListRes);
 
@@ -225,8 +224,6 @@ const Dashboard = () => {
       };
     });
   }, [config.timeRange]);
-
-  console.log({ rawData, rows, options });
 
   return (
     <Box>
