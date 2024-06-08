@@ -127,7 +127,6 @@ export const DevToColumns: GridColDef[] = [
     groupable: false,
     flex: 1,
     renderCell: (params) => {
-      console.log(params);
       return (
         <a href={`https://dev.to/${params.row.path}`} target="_blank">
           {params.value}

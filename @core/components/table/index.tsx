@@ -1,22 +1,35 @@
-import { DataGridPremium, GridColDef } from "@mui/x-data-grid-premium";
+import {
+  DataGridPremium,
+  GridColDef,
+  GridToolbar,
+} from "@mui/x-data-grid-premium";
 
 type Props = {
+  apiRef?: any;
   rows: any[];
   columns: GridColDef[];
+  initialState: any;
 };
 
-export default function Table({ rows, columns }: Props) {
+export default function Table({ apiRef, rows, columns, initialState }: Props) {
   return (
     <DataGridPremium
+      apiRef={apiRef}
       rows={rows}
       columns={columns}
-      initialState={{
-        pagination: {
-          paginationModel: {
-            pageSize: 5,
-          },
-        },
-      }}
+      initialState={
+        initialState
+          ? { ...initialState, density: "compact" }
+          : {
+              pagination: {
+                paginationModel: {
+                  pageSize: 5,
+                },
+              },
+              density: "compact",
+            }
+      }
+      slots={{ toolbar: GridToolbar }}
       pageSizeOptions={[5]}
       checkboxSelection
       disableRowSelectionOnClick
