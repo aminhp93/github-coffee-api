@@ -1,4 +1,4 @@
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGridPremium, GridColDef } from "@mui/x-data-grid-premium";
 
 type Props = {
   rows: any[];
@@ -7,7 +7,7 @@ type Props = {
 
 export default function Table({ rows, columns }: Props) {
   return (
-    <DataGrid
+    <DataGridPremium
       rows={rows}
       columns={columns}
       initialState={{
