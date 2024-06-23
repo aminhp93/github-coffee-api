@@ -9,14 +9,14 @@ import FireantService from "@/@core/services/fireant/Fireant.service";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import { RawData } from "../types";
 import DashboardTable from "../components/DashboardTable";
-import WatchlistConfig from "../components/WatchlistConfig";
+import SymbolConfig from "../components/SymbolConfig";
 import ConfigOption from "../components/TimeAndDisplayConfig";
 import useConfigStore from "../useConfigStore";
 import { getRows, getColumns, getOptions } from "./utils";
 
 const FireantFinancialReports = () => {
   const config = useConfigStore((state) => state.config);
-  const selectedWatchlist = useFireantStore((state) => state.selectedWatchlist);
+  const selectedSymbol = useFireantStore((state) => state.selectedSymbol);
 
   const [rawData, setRawData] = useState<RawData>([]);
   const [rows, setRows] = useState<any>([]);
@@ -26,17 +26,16 @@ const FireantFinancialReports = () => {
   useEffect(() => {
     (async () => {
       try {
-        const symbol = "VPB";
-        const res = await FireantService.financialReports(symbol);
-        setRawData(res);
-
+        if (!selectedSymbol) return;
+        const res = await FireantService.financialReports(selectedSymbol);
+        const xxx = getOptions(res);
         const rows = getRows(res);
         const columns = getColumns(res.columns);
 
+        setRawData(res);
         setRows(rows);
         setColumns(columns);
         setOptions((prev: any) => {
-          const xxx = getOptions(res);
           return {
             ...prev,
             chart: {
@@ -48,12 +47,12 @@ const FireantFinancialReports = () => {
         });
       } catch (err: any) {}
     })();
-  }, [selectedWatchlist, config.category, config.timeRange]);
+  }, [selectedSymbol]);
 
   return (
     <Box>
       <ConfigOption />
-      <WatchlistConfig />
+      <SymbolConfig />
 
       <Box mt={2}>
         {config.displayType === "raw-data" && (
