@@ -85,6 +85,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     (async () => {
+      console.log(config.category);
       try {
         if (config.category === "fireant-news") {
           const listSymbols = selectedWatchlist?.symbols || [];
@@ -192,6 +193,70 @@ const Dashboard = () => {
           const res = await OneHousingService.list(1, requestData);
           setRawData(res.data);
           setRows(getOneHousingRows(res.data));
+        } else if (config.category === "fireant-financial-report") {
+          const listSymbols = selectedWatchlist?.symbols || ["VPB"];
+
+          const listPromises = listSymbols.map((symbol) => {
+            return FireantService.financialReports(symbol).then((res) => {
+              return {
+                symbol,
+                data: res,
+              };
+            });
+          });
+
+          const listRes = await Promise.all(listPromises);
+
+          setRawData(listRes);
+          // setRows(getRows(listRes));
+          // setOptions((prev) => {
+          //   return {
+          //     ...prev,
+          //     yAxis: {
+          //       ...prev.yAxis,
+          //       min: 0,
+          //     },
+          //     series: listRes.map((item) => {
+          //       return {
+          //         type: "line",
+          //         name: item.symbol,
+          //         data: mapData(item.data),
+          //       };
+          //     }),
+          //   };
+          // });
+        } else if (config.category === "fireant-historical-price") {
+          const listSymbols = selectedWatchlist?.symbols || ["VPB"];
+
+          const listPromises = listSymbols.map((symbol) => {
+            return FireantService.historicalPrice(symbol).then((res) => {
+              return {
+                symbol,
+                data: res,
+              };
+            });
+          });
+
+          const listRes = await Promise.all(listPromises);
+
+          setRawData(listRes);
+          // setRows(getRows(listRes));
+          // setOptions((prev) => {
+          //   return {
+          //     ...prev,
+          //     yAxis: {
+          //       ...prev.yAxis,
+          //       min: 0,
+          //     },
+          //     series: listRes.map((item) => {
+          //       return {
+          //         type: "line",
+          //         name: item.symbol,
+          //         data: mapData(item.data),
+          //       };
+          //     }),
+          //   };
+          // });
         }
       } catch (err: any) {}
     })();

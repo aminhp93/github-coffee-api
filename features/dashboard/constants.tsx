@@ -35,13 +35,24 @@ export const LIST_DISPLAY = [
   },
 ];
 
-export const LIST_CATEGORY = [
+export const LIST_CATEGORY: {
+  value: Category;
+  label: any;
+}[] = [
   {
     value: "fireant-post",
     label: Newspaper,
   },
   {
     value: "fireant-news",
+    label: Newspaper,
+  },
+  {
+    value: "fireant-financial-report",
+    label: Newspaper,
+  },
+  {
+    value: "fireant-historical-price",
     label: Newspaper,
   },
   {
@@ -59,10 +70,6 @@ export const LIST_CATEGORY = [
 ];
 
 export const LIST_TIME_RANGE = [
-  // {
-  //   value: "1d",
-  //   label: "1d",
-  // },
   {
     value: "1w",
     label: "1w",
@@ -71,22 +78,6 @@ export const LIST_TIME_RANGE = [
     value: "1m",
     label: "1m",
   },
-  // {
-  //   value: "3m",
-  //   label: "3m",
-  // },
-  // {
-  //   value: "6m",
-  //   label: "6m",
-  // },
-  // {
-  //   value: "1y",
-  //   label: "1y",
-  // },
-  // {
-  //   value: "all",
-  //   label: "all",
-  // },
 ];
 
 export const FireantColumns: GridColDef[] = [
@@ -95,7 +86,7 @@ export const FireantColumns: GridColDef[] = [
   {
     field: "originalContent",
     headerName: "originalContent",
-    width: 100,
+    flex: 1,
     groupable: false,
   },
 ];
@@ -182,6 +173,22 @@ export const CONFIG: {
       },
     },
   },
+  // "fireant-financial-report": {
+  //   columns: FireantColumns,
+  //   initialStateConfig: {
+  //     rowGrouping: {
+  //       model: ["groupedSymbol"],
+  //     },
+  //   },
+  // },
+  // "fireant-historical-price": {
+  //   columns: FireantColumns,
+  //   initialStateConfig: {
+  //     rowGrouping: {
+  //       model: ["groupedSymbol"],
+  //     },
+  //   },
+  // },
   "dev-to": {
     columns: DevToColumns,
     initialStateConfig: {
