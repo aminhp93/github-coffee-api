@@ -4,8 +4,14 @@ import {
   ShowChart,
   Newspaper,
 } from "@mui/icons-material";
-import { GridColDef } from "@mui/x-data-grid-premium";
 import { Category } from "./types";
+import FireantPost from "./fireant-post";
+import FireantNews from "./fireant-news";
+import FireantFinancialReports from "./fireant-financial-reports";
+import FireantHistoricalPrice from "./fireant-historical-price";
+import Github from "./github";
+import DevTo from "./dev-to";
+import OneHousing from "./one-housing";
 
 export const DATA = [
   [1262304000000, 0.7537],
@@ -38,34 +44,42 @@ export const LIST_DISPLAY = [
 export const LIST_CATEGORY: {
   value: Category;
   label: any;
+  component: any;
 }[] = [
   {
     value: "fireant-post",
     label: Newspaper,
+    component: FireantPost,
   },
   {
     value: "fireant-news",
     label: Newspaper,
+    component: FireantNews,
   },
   {
     value: "fireant-financial-report",
     label: Newspaper,
+    component: FireantFinancialReports,
   },
   {
     value: "fireant-historical-price",
     label: Newspaper,
+    component: FireantHistoricalPrice,
   },
   {
     value: "github",
     label: Newspaper,
+    component: Github,
   },
   {
     value: "dev-to",
     label: Newspaper,
+    component: DevTo,
   },
   {
     value: "one-housing",
     label: Newspaper,
+    component: OneHousing,
   },
 ];
 
@@ -79,125 +93,3 @@ export const LIST_TIME_RANGE = [
     label: "1m",
   },
 ];
-
-export const FireantColumns: GridColDef[] = [
-  { field: "groupedSymbol", headerName: "Grouped Symbol", width: 150 },
-  { field: "postId", headerName: "postId", width: 100, groupable: false },
-  {
-    field: "originalContent",
-    headerName: "originalContent",
-    flex: 1,
-    groupable: false,
-  },
-];
-
-export const DevToColumns: GridColDef[] = [
-  { field: "groupedDate", headerName: "Grouped Date", width: 150 },
-  { field: "id", headerName: "id", width: 100, groupable: false },
-  {
-    field: "comments_count",
-    headerName: "comments_count",
-    width: 100,
-    groupable: false,
-  },
-  {
-    field: "public_reactions_count",
-    headerName: "public_reactions_count",
-    width: 100,
-    groupable: false,
-  },
-  {
-    field: "reading_time",
-    headerName: "reading_time",
-    width: 100,
-    groupable: false,
-  },
-  {
-    field: "title",
-    headerName: "title",
-    groupable: false,
-    flex: 1,
-    renderCell: (params) => {
-      return (
-        <a href={`https://dev.to/${params.row.path}`} target="_blank">
-          {params.value}
-        </a>
-      );
-    },
-  },
-];
-
-export const OneHousingColumns: GridColDef[] = [
-  { field: "urgent_sale", headerName: "urgent_sale", width: 100 },
-  { field: "province", headerName: "province", width: 100 },
-  { field: "legal_total_area", headerName: "legal_total_area", width: 100 },
-  { field: "max_area", headerName: "max_area", width: 100 },
-  { field: "min_area", headerName: "min_area", width: 100 },
-  { field: "max_selling_price", headerName: "max_selling_price", width: 100 },
-  { field: "min_selling_price", headerName: "min_selling_price", width: 100 },
-  { field: "min_unit_price", headerName: "min_unit_price", width: 100 },
-  { field: "number_of_bedrooms", headerName: "number_of_bedrooms", width: 100 },
-  { field: "floor_number", headerName: "floor_number", width: 100 },
-  {
-    field: "view_count",
-    headerName: "view_count",
-    width: 100,
-    renderCell: (params) => {
-      return <div>{params.row.view_count.count}</div>;
-    },
-  },
-  { field: "district", headerName: "district", width: 100 },
-  { field: "district_code", headerName: "district_code", width: 100 },
-  { field: "project_name", headerName: "project_name", width: 100 },
-];
-
-export const CONFIG: {
-  [key: string]: {
-    columns: GridColDef[];
-    initialStateConfig?: any;
-  };
-} = {
-  "fireant-post": {
-    columns: FireantColumns,
-    initialStateConfig: {
-      rowGrouping: {
-        model: ["groupedSymbol"],
-      },
-    },
-  },
-  "fireant-news": {
-    columns: FireantColumns,
-    initialStateConfig: {
-      rowGrouping: {
-        model: ["groupedSymbol"],
-      },
-    },
-  },
-  // "fireant-financial-report": {
-  //   columns: FireantColumns,
-  //   initialStateConfig: {
-  //     rowGrouping: {
-  //       model: ["groupedSymbol"],
-  //     },
-  //   },
-  // },
-  // "fireant-historical-price": {
-  //   columns: FireantColumns,
-  //   initialStateConfig: {
-  //     rowGrouping: {
-  //       model: ["groupedSymbol"],
-  //     },
-  //   },
-  // },
-  "dev-to": {
-    columns: DevToColumns,
-    initialStateConfig: {
-      rowGrouping: {
-        model: ["groupedDate"],
-      },
-    },
-  },
-  "one-housing": {
-    columns: OneHousingColumns,
-  },
-};

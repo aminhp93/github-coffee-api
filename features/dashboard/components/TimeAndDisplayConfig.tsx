@@ -1,9 +1,9 @@
 import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
-import useConfigStore from "./useConfigStore";
-import { Display, Category, TimeRange } from "./types";
-import { LIST_DISPLAY, LIST_CATEGORY, LIST_TIME_RANGE } from "./constants";
+import useConfigStore from "../useConfigStore";
+import { Display, TimeRange } from "../types";
+import { LIST_DISPLAY, LIST_TIME_RANGE } from "../constants";
 
-const Header = () => {
+const TimeAndDisplayConfig = () => {
   const config = useConfigStore((state) => state.config);
   const setConfig = useConfigStore((state) => state.setConfig);
 
@@ -27,16 +27,6 @@ const Header = () => {
     });
   };
 
-  const handleChangeCompany = (
-    event: React.MouseEvent<HTMLElement>,
-    data: Category
-  ) => {
-    setConfig({
-      ...config,
-      category: data,
-    });
-  };
-
   const controlDisplayType = {
     value: config.displayType,
     onChange: handleChangeDisplayType,
@@ -49,23 +39,8 @@ const Header = () => {
     exclusive: true,
   };
 
-  const controlCompany = {
-    value: config.category,
-    onChange: handleChangeCompany,
-    exclusive: true,
-  };
-
   return (
     <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-      <ToggleButtonGroup size="small" {...controlCompany}>
-        {LIST_CATEGORY.map((item) => (
-          <ToggleButton value={item.value} key={item.value}>
-            {<item.label />}
-            {item.value}
-          </ToggleButton>
-        ))}
-      </ToggleButtonGroup>
-
       <ToggleButtonGroup size="small" {...controlTimeRange}>
         {LIST_TIME_RANGE.map((item) => (
           <ToggleButton value={item.value} key={item.value}>
@@ -85,4 +60,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default TimeAndDisplayConfig;
