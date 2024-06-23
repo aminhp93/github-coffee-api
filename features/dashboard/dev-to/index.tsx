@@ -11,7 +11,7 @@ import DevToService from "@/@core/services/dev-to/DevTo.service";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import { RawData } from "../types";
 import { getRows } from "../utils";
-import { mapData } from "./utils";
+import { mapOptions } from "./utils";
 import DashboardTable from "../components/DashboardTable";
 import WatchlistConfig from "../components/WatchlistConfig";
 import ConfigOption from "../components/TimeAndDisplayConfig";
@@ -56,7 +56,7 @@ const DevTo = () => {
               {
                 type: "line",
                 name: "Dev.to",
-                data: mapData(flattenListRes),
+                data: mapOptions(flattenListRes),
               },
             ],
           };

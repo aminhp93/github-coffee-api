@@ -45,3 +45,26 @@ const formatNumberColumn = (value: number) => {
     maximumFractionDigits: 0,
   });
 };
+
+export const getOptions = (data: any) => {
+  const rows = getRows(data);
+  const row0 = rows[0];
+
+  const xAxisCategories = Object.keys(row0).filter(
+    (key) => key !== "Name" && key !== "id" && key !== "Symbol"
+  );
+
+  const xAxis = {
+    categories: xAxisCategories,
+  };
+
+  const series = {
+    name: row0["Name"],
+    data: xAxisCategories.map((i) => row0[i]),
+  };
+
+  return {
+    xAxis,
+    series,
+  };
+};

@@ -5,7 +5,6 @@ import { Box } from "@mui/material";
 import Highcharts from "highcharts";
 
 // Import local files
-import { getDefaultOptions } from "@/@core/components/chart/utils";
 import FireantService from "@/@core/services/fireant/Fireant.service";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import { RawData } from "../types";
@@ -13,7 +12,7 @@ import DashboardTable from "../components/DashboardTable";
 import WatchlistConfig from "../components/WatchlistConfig";
 import ConfigOption from "../components/TimeAndDisplayConfig";
 import useConfigStore from "../useConfigStore";
-import { getRows, getColumns } from "./utils";
+import { getRows, getColumns, getOptions } from "./utils";
 
 const FireantFinancialReports = () => {
   const config = useConfigStore((state) => state.config);
@@ -22,16 +21,13 @@ const FireantFinancialReports = () => {
   const [rawData, setRawData] = useState<RawData>([]);
   const [rows, setRows] = useState<any>([]);
   const [columns, setColumns] = useState<any>([]);
-  const [options, setOptions] = useState<Highcharts.Options>(
-    getDefaultOptions()
-  );
+  const [options, setOptions] = useState<Highcharts.Options>();
 
   useEffect(() => {
     (async () => {
       try {
         const symbol = "VPB";
         const res = await FireantService.financialReports(symbol);
-        console.log(res);
         setRawData(res);
 
         const rows = getRows(res);
@@ -39,37 +35,20 @@ const FireantFinancialReports = () => {
 
         setRows(rows);
         setColumns(columns);
+        setOptions((prev: any) => {
+          const xxx = getOptions(res);
+          return {
+            ...prev,
+            chart: {
+              type: "column",
+            },
+            xAxis: xxx.xAxis,
+            series: [xxx.series],
+          };
+        });
       } catch (err: any) {}
     })();
   }, [selectedWatchlist, config.category, config.timeRange]);
-
-  useEffect(() => {
-    setOptions((prev) => {
-      // convert config.timeRange to miliseconds like '1m' => 30 * 24 * 3600 * 1000
-      let subTractTimestamp = 0;
-      if (config.timeRange === "1m") {
-        subTractTimestamp = 30 * 24 * 3600 * 1000;
-      } else if (config.timeRange === "1w") {
-        subTractTimestamp = 7 * 24 * 3600 * 1000;
-      } else if (config.timeRange === "1d") {
-        subTractTimestamp = 24 * 3600 * 1000;
-      }
-
-      return {
-        ...prev,
-        xAxis: [
-          {
-            type: "datetime",
-            gridLineWidth: 1,
-            tickInterval: 24 * 3600 * 1000,
-            min: new Date().getTime() - subTractTimestamp,
-            // get current time and add 1 day
-            max: new Date().getTime() + 86400000,
-          },
-        ],
-      };
-    });
-  }, [config.timeRange]);
 
   return (
     <Box>

@@ -1,6 +1,6 @@
 import { StoriesItem } from "@/@core/services/dev-to/DevTo.schema";
 
-export const mapData = (data: StoriesItem[]) => {
+export const mapOptions = (data: StoriesItem[]) => {
   // group all data have same day like 2021-10-10
   const xxx = data.reduce((acc, item) => {
     const date = new Date(item.published_at_int * 1000)
