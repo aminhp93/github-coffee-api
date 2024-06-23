@@ -10,7 +10,7 @@ import { getDefaultOptions } from "@/@core/components/chart/utils";
 import OneHousingService from "@/@core/services/one-housing/OneHousing.service";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import { RawData } from "../types";
-import { getOneHousingRows } from "../utils";
+import { getRows } from "./utils";
 import DashboardTable from "../components/DashboardTable";
 import WatchlistConfig from "../components/WatchlistConfig";
 import ConfigOption from "../components/TimeAndDisplayConfig";
@@ -37,7 +37,7 @@ const OneHousing = () => {
 
         const res = await OneHousingService.list(1, requestData);
         setRawData(res.data);
-        setRows(getOneHousingRows(res.data));
+        setRows(getRows(res.data));
       } catch (err: any) {}
     })();
   }, [selectedWatchlist, config.category, config.timeRange]);

@@ -10,7 +10,8 @@ import { getDefaultOptions } from "@/@core/components/chart/utils";
 import DevToService from "@/@core/services/dev-to/DevTo.service";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import { RawData } from "../types";
-import { getDevToRows, mapDevToData } from "../utils";
+import { getRows } from "../utils";
+import { mapData } from "./utils";
 import DashboardTable from "../components/DashboardTable";
 import WatchlistConfig from "../components/WatchlistConfig";
 import ConfigOption from "../components/TimeAndDisplayConfig";
@@ -42,7 +43,7 @@ const DevTo = () => {
 
         setRawData(flattenListRes);
 
-        setRows(getDevToRows(flattenListRes));
+        setRows(getRows(flattenListRes));
 
         setOptions((prev) => {
           return {
@@ -55,7 +56,7 @@ const DevTo = () => {
               {
                 type: "line",
                 name: "Dev.to",
-                data: mapDevToData(flattenListRes),
+                data: mapData(flattenListRes),
               },
             ],
           };

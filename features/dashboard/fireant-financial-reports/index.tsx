@@ -13,6 +13,7 @@ import DashboardTable from "../components/DashboardTable";
 import WatchlistConfig from "../components/WatchlistConfig";
 import ConfigOption from "../components/TimeAndDisplayConfig";
 import useConfigStore from "../useConfigStore";
+import { getRows, getColumns } from "./utils";
 
 const FireantFinancialReports = () => {
   const config = useConfigStore((state) => state.config);
@@ -20,6 +21,7 @@ const FireantFinancialReports = () => {
 
   const [rawData, setRawData] = useState<RawData>([]);
   const [rows, setRows] = useState<any>([]);
+  const [columns, setColumns] = useState<any>([]);
   const [options, setOptions] = useState<Highcharts.Options>(
     getDefaultOptions()
   );
@@ -27,20 +29,16 @@ const FireantFinancialReports = () => {
   useEffect(() => {
     (async () => {
       try {
-        const listSymbols = selectedWatchlist?.symbols || ["VPB"];
+        const symbol = "VPB";
+        const res = await FireantService.financialReports(symbol);
+        console.log(res);
+        setRawData(res);
 
-        const listPromises = listSymbols.map((symbol) => {
-          return FireantService.financialReports(symbol).then((res) => {
-            return {
-              symbol,
-              data: res,
-            };
-          });
-        });
+        const rows = getRows(res);
+        const columns = getColumns(res.columns);
 
-        const listRes = await Promise.all(listPromises);
-
-        setRawData(listRes);
+        setRows(rows);
+        setColumns(columns);
       } catch (err: any) {}
     })();
   }, [selectedWatchlist, config.category, config.timeRange]);
@@ -90,7 +88,7 @@ const FireantFinancialReports = () => {
           </Box>
         )}
         {config.displayType === "table" && (
-          <DashboardTable columns={[]} rows={rows} />
+          <DashboardTable columns={columns} rows={rows} />
         )}
         {config.displayType === "chart" && (
           <HighchartsReact highcharts={Highcharts} options={options} />

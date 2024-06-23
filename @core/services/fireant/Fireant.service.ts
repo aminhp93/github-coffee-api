@@ -82,7 +82,7 @@ const FireantService = {
     period: Period = "Q",
     compact: boolean = true,
     offset: number = DEFAULT_OFFSET,
-    limit: number = DEFAULT_LIMIT
+    limit: number = 5
   ): Promise<FinancialReportsResponse> =>
     httpFireantService({
       url: FireantUrls.financialReports(
