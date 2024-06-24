@@ -1,5 +1,6 @@
 import axios from "axios";
 import { TOKEN, DEFAULT_OFFSET, DEFAULT_LIMIT } from "./Fireant.constants";
+import dayjs from "dayjs";
 
 import {
   HistoricalPriceResponse,
@@ -63,7 +64,7 @@ const FireantService = {
   historicalPrice: (
     symbol: string,
     startDate: string = "2021-06-23",
-    endDate: string = "2024-06-23",
+    endDate: string = dayjs().format("YYYY-MM-DD"), // "2024-06-23
     offset: number = DEFAULT_OFFSET,
     limit: number = DEFAULT_LIMIT
   ): Promise<HistoricalPriceResponse> =>
