@@ -23,10 +23,10 @@ import {
 // Import local files
 import { getRequest } from "@/@core/services/utils";
 import { TOKEN } from "@/@core/services/fireant/Fireant.constants";
-import { LIST_API } from "./constants";
+import { LIST_API } from "../../features/root-api/constants";
 import RequestComponent from "@/@core/components/request";
 import Chart from "@/@core/components/chart";
-import AppTable from "../components/AppTable";
+import AppTable from "./AppTable";
 import { useRequestStore } from "@/@core/store/request";
 
 const ResponseComponent = dynamic(() => import("@/@core/components/response"), {
