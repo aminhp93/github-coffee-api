@@ -3,6 +3,8 @@ import { produce } from "immer";
 import { Watchlists, WatchlistItem } from "./schema";
 
 type FireantStore = {
+  selectedSymbol?: string;
+  setSelectedSymbol: (data: string) => void;
   watchlists: Watchlists;
   selectedWatchlist?: WatchlistItem;
   setWatchlists: (data: Watchlists) => void;
@@ -10,6 +12,13 @@ type FireantStore = {
 };
 
 const useFireantStore = create<FireantStore>((set) => ({
+  selectedSymbol: "VPB",
+  setSelectedSymbol: (data) =>
+    set(
+      produce((state) => {
+        state.selectedSymbol = data;
+      })
+    ),
   watchlists: [],
   setWatchlists: (data) =>
     set(

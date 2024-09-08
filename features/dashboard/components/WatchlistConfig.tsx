@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import useConfigStore from "./useConfigStore";
+import useConfigStore from "../useConfigStore";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -9,7 +9,7 @@ import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import FireantService from "@/@core/services/fireant/Fireant.service";
 import { keyBy } from "lodash";
 
-const SubHeader = () => {
+const WatchlistConfig = () => {
   const config = useConfigStore((state) => state.config);
   const setWatchlists = useFireantStore((state) => state.setWatchlists);
   const watchlists = useFireantStore((state) => state.watchlists);
@@ -19,7 +19,6 @@ const SubHeader = () => {
   );
 
   const handleChange = (event: SelectChangeEvent) => {
-    console.log(event.target.value, watchlists);
     const wlObj = keyBy(watchlists, "watchlistID");
     setSelectedWatchlist(wlObj[event.target.value as string]);
   };
@@ -32,15 +31,15 @@ const SubHeader = () => {
     init();
   }, [setWatchlists]);
 
-  console.log(watchlists, selectedWatchlist);
-
   return (
     <Box>
-      {config.company === "fireant" && (
+      {(config.category === "fireant-post" ||
+        config.category === "fireant-news") && (
         <Box>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">Watchlist</InputLabel>
             <Select
+              size="small"
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={selectedWatchlist?.watchlistID || ("" as any)}
@@ -63,4 +62,4 @@ const SubHeader = () => {
   );
 };
 
-export default SubHeader;
+export default WatchlistConfig;
