@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import useConfigStore from "./useConfigStore";
+import useConfigStore from "../useConfigStore";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -9,7 +9,7 @@ import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import FireantService from "@/@core/services/fireant/Fireant.service";
 import { keyBy } from "lodash";
 
-const SubHeader = () => {
+const WatchlistConfig = () => {
   const config = useConfigStore((state) => state.config);
   const setWatchlists = useFireantStore((state) => state.setWatchlists);
   const watchlists = useFireantStore((state) => state.watchlists);
@@ -62,4 +62,4 @@ const SubHeader = () => {
   );
 };
 
-export default SubHeader;
+export default WatchlistConfig;

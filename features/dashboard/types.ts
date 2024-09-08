@@ -7,6 +7,8 @@ export type Category =
   | "fireant-post"
   | "fireant-news"
   | "dev-to"
-  | "one-housing";
+  | "one-housing"
+  | "fireant-financial-report"
+  | "fireant-historical-price";
 
 export type RawData = any;

@@ -1,6 +1,6 @@
 import Table from "@/@core/components/table";
 import { useRequestStore } from "@/@core/store/request";
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid-premium";
 
 const AppTable = () => {
   const response = useRequestStore((s) => s.response);
