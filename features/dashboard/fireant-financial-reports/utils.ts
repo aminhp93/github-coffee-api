@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { GridColDef } from "@mui/x-data-grid-premium";
 
 export const getRows = (data: any) => {

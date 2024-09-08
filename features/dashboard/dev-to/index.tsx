@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 // Import libaries
 import { useEffect, useState } from "react";
 import HighchartsReact from "highcharts-react-official";
@@ -23,9 +25,8 @@ const DevTo = () => {
 
   const [rawData, setRawData] = useState<RawData>([]);
   const [rows, setRows] = useState<any>([]);
-  const [options, setOptions] = useState<Highcharts.Options>(
-    getDefaultOptions()
-  );
+  const [options, setOptions] =
+    useState<Highcharts.Options>(getDefaultOptions());
 
   useEffect(() => {
     (async () => {
@@ -61,7 +62,10 @@ const DevTo = () => {
             ],
           };
         });
-      } catch (err: any) {}
+      } catch (err: any) {
+        // eslint-disable-next-line no-console
+        console.error(err);
+      }
     })();
   }, [selectedWatchlist, config.category, config.timeRange]);
 

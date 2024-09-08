@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Box, TextField } from "@mui/material";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
 

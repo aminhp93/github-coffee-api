@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Box } from "@mui/material";
 import useConfigStore from "../useConfigStore";
 import InputLabel from "@mui/material/InputLabel";

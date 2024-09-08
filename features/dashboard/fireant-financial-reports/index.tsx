@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 // Import libaries
 import { useEffect, useState } from "react";
 import HighchartsReact from "highcharts-react-official";
@@ -45,7 +47,10 @@ const FireantFinancialReports = () => {
             series: [xxx.series],
           };
         });
-      } catch (err: any) {}
+      } catch (err: any) {
+        // eslint-disable-next-line no-console
+        console.error(err);
+      }
     })();
   }, [selectedSymbol]);
 

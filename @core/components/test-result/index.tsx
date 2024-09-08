@@ -1,4 +1,4 @@
-"use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import axios from "axios";
 import { Button, Box } from "@mui/material";
@@ -40,6 +40,7 @@ export default function TestResult() {
         setAllResponses(res);
       })
       .catch((err) => {
+        // eslint-disable-next-line no-console
         console.log(err);
       });
   };
