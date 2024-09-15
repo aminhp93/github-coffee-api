@@ -51,7 +51,7 @@ export default function TestResult() {
 
   return (
     <Box>
-      <Button onClick={handleTest}>Test reqsult</Button>
+      <Button onClick={handleTest}>Test all</Button>
       <Button onClick={handleClearStore}>Clear store</Button>
     </Box>
   );

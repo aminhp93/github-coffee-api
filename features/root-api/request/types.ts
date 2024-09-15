@@ -10,5 +10,5 @@ export type Request = {
   url: string;
   name: string;
   id: string;
-  parseResponse?: any;
+  schema?: any;
 };

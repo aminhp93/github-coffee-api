@@ -3,9 +3,16 @@ import { Button, Box } from "@mui/material";
 import { Request } from "./types";
 import { Response } from "../response/types";
 
-const getClassName = (response: Response | null) => {
+const getClassName = (request: Request, response: Response | null) => {
   if (!response) return "";
-  return response.status === "success" ? "success" : "failed";
+  if (response.status === "success") {
+    if (!request.schema) {
+      return "success warning";
+    }
+    return "success";
+  } else {
+    return "failed";
+  }
 };
 
 type Props = {
@@ -20,7 +27,7 @@ const RequestItem = ({ request, response }: Props) => {
     setRequest(request);
   };
 
-  const className = getClassName(response);
+  const className = getClassName(request, response);
 
   return (
     <Box className={className}>

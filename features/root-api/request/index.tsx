@@ -1,5 +1,5 @@
 import { Box, styled } from "@mui/material";
-import { red, green } from "@mui/material/colors";
+import { red, green, yellow } from "@mui/material/colors";
 import RequestItem from "./RequestItem";
 import { Request } from "./types";
 import { Response } from "../response/types";
@@ -37,6 +37,9 @@ const StyledBox = styled(Box)(({ theme }) => ({
   "& > div": {
     padding: "10px",
     "&.success": {
+      "&.warning": {
+        backgroundColor: yellow[200],
+      },
       backgroundColor: green[200],
     },
     "&.failed": {

@@ -70,14 +70,14 @@ export const useGetRequest = () => {
           .flat()
           .find((i) => i.url === request.url);
 
-        if (found?.parseResponse) {
-          found.parseResponse.parse(res.data);
+        if (found?.schema) {
+          found.schema.parse(res.data);
         }
 
-        const result = {
+        const result: Response = {
           ...res,
           url: request.url,
-          status: "success" as const,
+          status: "success",
         };
         setResponse(result);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
