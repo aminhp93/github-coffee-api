@@ -19,8 +19,6 @@ const RequestComponent = ({ requestList, allResponses, response }: Props) => {
           allResponses.find((r) => r.url === i.url) ??
           (response?.url && response.url === i.url ? response : null);
 
-        if (!finalResponse) return null;
-
         return <RequestItem key={i.url} request={i} response={finalResponse} />;
       })}
     </StyledBox>

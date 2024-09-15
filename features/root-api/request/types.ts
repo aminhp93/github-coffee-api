@@ -9,6 +9,6 @@ export type RequestLabel = {
 export type Request = {
   url: string;
   name: string;
-  id: number;
+  id: string;
   parseResponse?: any;
 };

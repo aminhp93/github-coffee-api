@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 // Import libraries
-import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useState } from "react";
 import {
   Box,
   Accordion,
@@ -20,59 +18,29 @@ import {
   ShowChart,
 } from "@mui/icons-material";
 
-// Import local files
-import { getRequest } from "@/@core/services/utils";
-import { TOKEN } from "@/@core/services/fireant/Fireant.constants";
-import { LIST_API } from "../../features/root-api/constants";
-import RequestComponent from "@/@core/components/request";
+// Import local files: relative path
+import { TOKEN } from "@/@core/services/fireant/constants";
 import Chart from "@/@core/components/chart";
+
+// Import local files: absolute path
 import AppTable from "./AppTable";
-import { useRequestStore } from "@/@core/store/request";
-
-const ResponseComponent = dynamic(() => import("@/@core/components/response"), {
-  ssr: false,
-});
-
-const TestResult = dynamic(() => import("@/@core/components/test-result"), {
-  ssr: false,
-});
+import { useRequestStore, useGetRequest } from "./store/request";
+import ResponseComponent from "./response";
+import TestResult from "./test-result";
+import { LIST_API } from "./constants";
+import RequestComponent from "./request";
 
 type Display = "raw-api" | "table" | "chart";
 
-const Home = () => {
+const RootApi = () => {
+  useGetRequest();
   const request = useRequestStore((s) => s.request);
   const response = useRequestStore((s) => s.response);
-  const setResponse = useRequestStore((s) => s.setResponse);
   const allResponses = useRequestStore((s) => s.allResponses);
   const [display, setDisplay] = useState<Display>("raw-api");
 
-  useEffect(() => {
-    if (!request) return;
-
-    (async () => {
-      try {
-        const res = await axios(getRequest(TOKEN, request?.url)!);
-
-        // find item by url
-        const found = LIST_API.map((i) => i.request)
-          .flat()
-          .find((i) => i.url === request.url);
-
-        if (found?.parseResponse) {
-          found.parseResponse.parse(res.data);
-        }
-
-        const result = { ...res, url: request.url, status: "success" as const };
-        setResponse(result);
-      } catch (err: any) {
-        const errorResult = { ...err, url: request.url, status: "failed" };
-        setResponse(errorResult);
-      }
-    })();
-  }, [request, setResponse]);
-
   const handleChange = (
-    event: React.MouseEvent<HTMLElement>,
+    _: React.MouseEvent<HTMLElement>,
     newAlignment: Display
   ) => {
     setDisplay(newAlignment);
@@ -160,4 +128,4 @@ const StyledBoxListApi = styled(Box)({
   height: "100%",
 });
 
-export default Home;
+export default RootApi;

@@ -2,7 +2,7 @@
 
 import { Box } from "@mui/material";
 
-import { getRequest } from "../../services/utils";
+import { getRequest } from "../../../@core/services/utils";
 import { Response } from "./types";
 
 type Props = {

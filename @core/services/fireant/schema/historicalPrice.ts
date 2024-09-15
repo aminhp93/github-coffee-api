@@ -33,6 +33,6 @@ const HistoricalPriceItemSchema = z.object({
   unit: z.number(),
 });
 
-const HistoricalPriceSchema = z.array(HistoricalPriceItemSchema);
+export const HistoricalPriceSchema = z.array(HistoricalPriceItemSchema);
 
 export type HistoricalPriceResponse = z.infer<typeof HistoricalPriceSchema>;
