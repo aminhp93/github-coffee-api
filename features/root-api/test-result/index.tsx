@@ -6,9 +6,9 @@ import {
   LIST_FIREANT_API,
   LIST_WICHART_API,
 } from "../../../features/root-api/constants";
-import { TOKEN } from "../../services/fireant/Fireant.constants";
-import { useRequestStore } from "../../store/request";
-import { getRequest } from "../../services/utils";
+import { TOKEN } from "@/@core/services/fireant/Fireant.constants";
+import { useRequestStore } from "../store/request";
+import { getRequest } from "@/@core/services/utils";
 
 type PromiseItem = {
   url: string;

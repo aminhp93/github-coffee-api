@@ -1,4 +1,5 @@
-import { Request } from "@/@core/components/request/types";
+import { Request } from "@/features/root-api/request/types";
+import { HistoricalPriceSchema } from "@/@core/services/fireant/schema";
 
 export const LIST_WICHART_API: Request[] = [
   {
@@ -86,6 +87,7 @@ export const LIST_FIREANT_API: Request[] = [
     url: "https://restv2.fireant.vn/symbols/VPB/historical-quotes?startDate=2021-02-14&endDate=2024-02-14&offset=0&limit=20",
     name: "Historical Quotes",
     id: 14,
+    parseResponse: HistoricalPriceSchema,
   },
 ];
 
