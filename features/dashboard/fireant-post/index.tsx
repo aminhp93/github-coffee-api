@@ -8,7 +8,7 @@ import { GridColDef } from "@mui/x-data-grid-premium";
 
 // Import local files
 import { getDefaultOptions } from "@/@core/components/chart/utils";
-import FireantService from "@/@core/services/fireant/Fireant.service";
+import FireantService from "@/@core/services/fireant/service";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import { RawData } from "../types";
 import { getRows, mapData } from "../utils";

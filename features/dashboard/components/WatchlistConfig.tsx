@@ -8,7 +8,7 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { useEffect } from "react";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
-import FireantService from "@/@core/services/fireant/Fireant.service";
+import FireantService from "@/@core/services/fireant/service";
 import { keyBy } from "lodash";
 
 const WatchlistConfig = () => {

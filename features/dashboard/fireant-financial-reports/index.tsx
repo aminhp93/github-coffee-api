@@ -7,7 +7,7 @@ import { Box } from "@mui/material";
 import Highcharts from "highcharts";
 
 // Import local files
-import FireantService from "@/@core/services/fireant/Fireant.service";
+import FireantService from "@/@core/services/fireant/service";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import { RawData } from "../types";
 import DashboardTable from "../components/DashboardTable";
