@@ -133,7 +133,7 @@ export default FireantPost;
 
 const columns: GridColDef[] = [
   { field: "groupedSymbol", headerName: "Grouped Symbol", width: 150 },
-  { field: "postId", headerName: "postId", width: 100, groupable: false },
+  { field: "postID", headerName: "postID", width: 100, groupable: false },
   {
     field: "originalContent",
     headerName: "originalContent",

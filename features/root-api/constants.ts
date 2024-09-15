@@ -1,6 +1,14 @@
 import { Request } from "@/features/root-api/request/types";
 import { FireantUrls } from "@/@core/services/fireant/constants";
-import { FundamentalSchema } from "@/@core/services/fireant/schema";
+import {
+  FundamentalSchema,
+  PostSchema,
+  WatchlistsSchema,
+  ProfileSchema,
+  RrgSchema,
+  FinancialReportSchema,
+  HistoricalPriceSchema,
+} from "@/@core/services/fireant/schema";
 import { baseURL } from "@/@core/services/fireant/service";
 
 export const LIST_WICHART_API: Request[] = [
@@ -21,6 +29,20 @@ export const LIST_FIREANT_API: Request[] = Object.keys(FireantUrls).map(
     let schema;
     if (key === "fundamental") {
       schema = FundamentalSchema;
+    } else if (key === "news") {
+      schema = PostSchema;
+    } else if (key === "posts") {
+      schema = PostSchema;
+    } else if (key === "watchlists") {
+      schema = WatchlistsSchema;
+    } else if (key === "profile") {
+      schema = ProfileSchema;
+    } else if (key === "rrg") {
+      schema = RrgSchema;
+    } else if (key === "financialReports") {
+      schema = FinancialReportSchema;
+    } else if (key === "historicalPrice") {
+      schema = HistoricalPriceSchema;
     }
 
     return {
