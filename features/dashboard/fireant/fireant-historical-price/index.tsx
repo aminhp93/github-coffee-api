@@ -11,12 +11,12 @@ import { GridColDef } from "@mui/x-data-grid-premium";
 import { getDefaultOptions } from "@/@core/components/chart/utils";
 import FireantService from "@/@core/services/fireant/service";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
-import { RawData } from "../types";
-import DashboardTable from "../components/DashboardTable";
-import TimeAndDisplayConfig from "../components/TimeAndDisplayConfig";
-import useConfigStore from "../useConfigStore";
+import { RawData } from "../../types";
+import DashboardTable from "../../@components/DashboardTable";
+import TimeAndDisplayConfig from "../../@components/TimeAndDisplayConfig";
+import useConfigStore from "../../useConfigStore";
 import { getRows, formatNumberColumn, DIVIDER } from "./utils";
-import SymbolConfig from "../components/SymbolConfig";
+import SymbolConfig from "../../@components/SymbolConfig";
 
 const FireantHistoricalPrice = () => {
   const config = useConfigStore((state) => state.config);

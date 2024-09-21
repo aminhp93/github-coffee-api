@@ -7,10 +7,10 @@ import {
   Newspaper,
 } from "@mui/icons-material";
 import { Category } from "./types";
-import FireantPost from "./fireant-post";
-import FireantNews from "./fireant-news";
-import FireantFinancialReports from "./fireant-financial-reports";
-import FireantHistoricalPrice from "./fireant-historical-price";
+import FireantPost from "./fireant/fireant-post";
+import FireantNews from "./fireant/fireant-news";
+import FireantFinancialReports from "./fireant/fireant-financial-reports";
+import FireantHistoricalPrice from "./fireant/fireant-historical-price";
 import Github from "./github";
 import DevTo from "./dev-to";
 import OneHousing from "./one-housing";

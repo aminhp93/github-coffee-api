@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 // Import libaries
 import { useEffect, useState } from "react";
 import HighchartsReact from "highcharts-react-official";
@@ -11,14 +10,14 @@ import { GridColDef } from "@mui/x-data-grid-premium";
 import { getDefaultOptions } from "@/@core/components/chart/utils";
 import FireantService from "@/@core/services/fireant/service";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
-import { RawData } from "../types";
-import { getRows, mapData } from "../utils";
-import DashboardTable from "../components/DashboardTable";
-import WatchlistConfig from "../components/WatchlistConfig";
-import ConfigOption from "../components/TimeAndDisplayConfig";
-import useConfigStore from "../useConfigStore";
+import { RawData } from "../../types";
+import { getRows, mapData } from "../../utils";
+import DashboardTable from "../../@components/DashboardTable";
+import WatchlistConfig from "../../@components/WatchlistConfig";
+import ConfigOption from "../../@components/TimeAndDisplayConfig";
+import useConfigStore from "../../useConfigStore";
 
-const FireantNews = () => {
+const FireantPost = () => {
   const config = useConfigStore((state) => state.config);
   const selectedWatchlist = useFireantStore((state) => state.selectedWatchlist);
 
@@ -31,9 +30,8 @@ const FireantNews = () => {
     (async () => {
       try {
         const listSymbols = selectedWatchlist?.symbols || [];
-
         const listPromises = listSymbols.map((symbol) => {
-          return FireantService.news(symbol).then((res) => {
+          return FireantService.posts(symbol).then((res) => {
             return {
               symbol,
               data: res,
@@ -131,20 +129,14 @@ const FireantNews = () => {
   );
 };
 
-export default FireantNews;
+export default FireantPost;
 
 const columns: GridColDef[] = [
   { field: "groupedSymbol", headerName: "Grouped Symbol", width: 150 },
   { field: "postID", headerName: "postID", width: 100, groupable: false },
   {
-    field: "title",
-    headerName: "title",
-    flex: 1,
-    groupable: false,
-  },
-  {
-    field: "description",
-    headerName: "description",
+    field: "originalContent",
+    headerName: "originalContent",
     flex: 1,
     groupable: false,
   },
