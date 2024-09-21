@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 // Import libaries
@@ -10,16 +9,16 @@ import { GridColDef } from "@mui/x-data-grid-premium";
 
 // Import local files
 import { getDefaultOptions } from "@/@core/components/chart/utils";
-import OneHousingService from "@/@core/services/one-housing/OneHousing.service";
+import FireantService from "@/@core/services/fireant/service";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
-import { RawData } from "../types";
-import { getRows } from "./utils";
-import DashboardTable from "../@components/DashboardTable";
-import WatchlistConfig from "../fireant/@components/WatchlistConfig";
-import ConfigOption from "../@components/TimeAndDisplayConfig";
-import useConfigStore from "../useConfigStore";
+import { RawData } from "../../types";
+import { getRows, mapData } from "../../utils";
+import DashboardTable from "../../@components/DashboardTable";
+import WatchlistConfig from "../@components/WatchlistConfig";
+import ConfigOption from "../../@components/TimeAndDisplayConfig";
+import useConfigStore from "../../useConfigStore";
 
-const OneHousing = () => {
+const FireantNews = () => {
   const config = useConfigStore((state) => state.config);
   const selectedWatchlist = useFireantStore((state) => state.selectedWatchlist);
 
@@ -31,17 +30,40 @@ const OneHousing = () => {
   useEffect(() => {
     (async () => {
       try {
-        const requestData = {
-          search_type: "RECOMMENDATION",
-          property_provider_source: ["SECONDARY"],
-          available_for_sale: true,
-        };
+        const listSymbols = selectedWatchlist?.symbols || [];
 
-        const res = await OneHousingService.list(1, requestData);
-        setRawData(res.data);
-        setRows(getRows(res.data));
-      } catch (error: any) {
+        const listPromises = listSymbols.map((symbol) => {
+          return FireantService.news(symbol).then((res) => {
+            return {
+              symbol,
+              data: res,
+            };
+          });
+        });
+
+        const listRes = await Promise.all(listPromises);
+
+        setRawData(listRes);
+        setRows(getRows(listRes));
+        setOptions((prev) => {
+          return {
+            ...prev,
+            yAxis: {
+              ...prev.yAxis,
+              min: 0,
+            },
+            series: listRes.map((item) => {
+              return {
+                type: "line",
+                name: item.symbol,
+                data: mapData(item.data),
+              };
+            }),
+          };
+        });
+      } catch (err: any) {
         // eslint-disable-next-line no-console
+        console.error(err);
       }
     })();
   }, [selectedWatchlist, config.category, config.timeRange]);
@@ -91,7 +113,15 @@ const OneHousing = () => {
           </Box>
         )}
         {config.displayType === "table" && (
-          <DashboardTable columns={columns} rows={rows} />
+          <DashboardTable
+            initialStateConfig={{
+              rowGrouping: {
+                model: ["groupedSymbol"],
+              },
+            }}
+            columns={columns}
+            rows={rows}
+          />
         )}
         {config.displayType === "chart" && (
           <HighchartsReact highcharts={Highcharts} options={options} />
@@ -101,28 +131,21 @@ const OneHousing = () => {
   );
 };
 
-export default OneHousing;
+export default FireantNews;
 
 const columns: GridColDef[] = [
-  { field: "urgent_sale", headerName: "urgent_sale", width: 100 },
-  { field: "province", headerName: "province", width: 100 },
-  { field: "legal_total_area", headerName: "legal_total_area", width: 100 },
-  { field: "max_area", headerName: "max_area", width: 100 },
-  { field: "min_area", headerName: "min_area", width: 100 },
-  { field: "max_selling_price", headerName: "max_selling_price", width: 100 },
-  { field: "min_selling_price", headerName: "min_selling_price", width: 100 },
-  { field: "min_unit_price", headerName: "min_unit_price", width: 100 },
-  { field: "number_of_bedrooms", headerName: "number_of_bedrooms", width: 100 },
-  { field: "floor_number", headerName: "floor_number", width: 100 },
+  { field: "groupedSymbol", headerName: "Grouped Symbol", width: 150 },
+  { field: "postID", headerName: "postID", width: 100, groupable: false },
   {
-    field: "view_count",
-    headerName: "view_count",
-    width: 100,
-    renderCell: (params) => {
-      return <div>{params.row.view_count.count}</div>;
-    },
+    field: "title",
+    headerName: "title",
+    flex: 1,
+    groupable: false,
   },
-  { field: "district", headerName: "district", width: 100 },
-  { field: "district_code", headerName: "district_code", width: 100 },
-  { field: "project_name", headerName: "project_name", width: 100 },
+  {
+    field: "description",
+    headerName: "description",
+    flex: 1,
+    groupable: false,
+  },
 ];

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Highcharts from "highcharts";
 
 export const getDefaultOptions = (): Highcharts.Options => {
