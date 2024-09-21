@@ -14,7 +14,7 @@ import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import { RawData } from "../../types";
 import { getRows, mapData } from "../../utils";
 import DashboardTable from "../../@components/DashboardTable";
-import WatchlistConfig from "../../@components/WatchlistConfig";
+import WatchlistConfig from "../@components/WatchlistConfig";
 import ConfigOption from "../../@components/TimeAndDisplayConfig";
 import useConfigStore from "../../useConfigStore";
 

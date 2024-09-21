@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Box } from "@mui/material";
-import useConfigStore from "../useConfigStore";
+import useConfigStore from "../../useConfigStore";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -36,7 +36,8 @@ const WatchlistConfig = () => {
   return (
     <Box>
       {(config.category === "fireant-post" ||
-        config.category === "fireant-news") && (
+        config.category === "fireant-news" ||
+        config.category === "fireant-watchlists") && (
         <Box>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">Watchlist</InputLabel>

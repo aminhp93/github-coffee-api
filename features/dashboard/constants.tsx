@@ -7,6 +7,7 @@ import {
   Newspaper,
 } from "@mui/icons-material";
 import { Category } from "./types";
+import FireantWatchlists from "./fireant/fireant-watchlists";
 import FireantPost from "./fireant/fireant-post";
 import FireantNews from "./fireant/fireant-news";
 import FireantFinancialReports from "./fireant/fireant-financial-reports";
@@ -48,6 +49,11 @@ export const LIST_CATEGORY: {
   label: any;
   component: any;
 }[] = [
+  {
+    value: "fireant-watchlists",
+    label: Newspaper,
+    component: FireantWatchlists,
+  },
   {
     value: "fireant-post",
     label: Newspaper,
