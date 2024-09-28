@@ -3,14 +3,21 @@ import { red, green, yellow } from "@mui/material/colors";
 import RequestItem from "./RequestItem";
 import { Request } from "./types";
 import { Response } from "../response/types";
+import { CompanyId } from "@/features/root-api/constants";
 
 type Props = {
+  companyId: CompanyId;
   requestList: Request[];
   allResponses: Response[];
   response: Response | null;
 };
 
-const RequestComponent = ({ requestList, allResponses, response }: Props) => {
+const RequestComponent = ({
+  requestList,
+  allResponses,
+  response,
+  companyId,
+}: Props) => {
   return (
     <StyledBox>
       {requestList.map((i) => {
@@ -19,7 +26,13 @@ const RequestComponent = ({ requestList, allResponses, response }: Props) => {
           allResponses.find((r) => r.url === i.url) ??
           (response?.url && response.url === i.url ? response : null);
 
-        return <RequestItem key={i.url} request={i} response={finalResponse} />;
+        return (
+          <RequestItem
+            key={i.url}
+            request={{ ...i, companyId }}
+            response={finalResponse}
+          />
+        );
       })}
     </StyledBox>
   );

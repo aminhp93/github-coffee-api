@@ -9,7 +9,7 @@ import { GridColDef } from "@mui/x-data-grid-premium";
 
 // Import local files
 import { getDefaultOptions } from "@/@core/components/chart/utils";
-import DevToService from "@/@core/services/dev-to/DevTo.service";
+import DevToService from "@/@core/services/dev-to/service";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import { RawData } from "../types";
 import { getRows } from "../utils";
@@ -35,7 +35,7 @@ const DevTo = () => {
 
         const listPromises = Array.from({ length: numberOfPages }).map(
           (_, index) => {
-            return DevToService.getStories(index + 1, "latest");
+            return DevToService.stories(index + 1, "latest");
           }
         );
 

@@ -56,6 +56,7 @@ export const useRequestStore = create<RequestStore>((set) => ({
 
 export const useGetRequest = () => {
   const request = useRequestStore((s) => s.request);
+
   const setResponse = useRequestStore((s) => s.setResponse);
 
   useEffect(() => {
@@ -63,7 +64,11 @@ export const useGetRequest = () => {
 
     (async () => {
       try {
-        const res = await axios(getRequest(TOKEN, request?.url)!);
+        let token;
+        if (request.companyId === "fireant") {
+          token = TOKEN;
+        }
+        const res = await axios(getRequest(token, request?.url)!);
 
         // find item by url
         const found = LIST_API.map((i) => i.request)
