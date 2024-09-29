@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 // Import libaries
@@ -10,16 +9,16 @@ import { GridColDef } from "@mui/x-data-grid-premium";
 
 // Import local files
 import { getDefaultOptions } from "@/@core/components/chart/utils";
-import OneHousingService from "@/@core/services/one-housing/OneHousing.service";
+import DevToService from "@/@core/services/dev-to/service";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
-import { RawData } from "../types";
-import { getRows } from "./utils";
-import DashboardTable from "../@components/DashboardTable";
-import WatchlistConfig from "../fireant/@components/WatchlistConfig";
-import ConfigOption from "../@components/TimeAndDisplayConfig";
-import useConfigStore from "../useConfigStore";
+import Table from "@/@core/components/table";
+import { RawData } from "../../types";
+import { mapOptions } from "../utils";
+import WatchlistConfig from "../../fireant/@components/WatchlistConfig";
+import ConfigOption from "../../@components/TimeAndDisplayConfig";
+import useConfigStore from "../../useConfigStore";
 
-const OneHousing = () => {
+const DevToStories = () => {
   const config = useConfigStore((state) => state.config);
   const selectedWatchlist = useFireantStore((state) => state.selectedWatchlist);
 
@@ -31,17 +30,40 @@ const OneHousing = () => {
   useEffect(() => {
     (async () => {
       try {
-        const requestData = {
-          search_type: "RECOMMENDATION",
-          property_provider_source: ["SECONDARY"],
-          available_for_sale: true,
-        };
+        const numberOfPages = 10;
 
-        const res = await OneHousingService.list(1, requestData);
-        setRawData(res.data);
-        setRows(getRows(res.data));
-      } catch (error: any) {
+        const listPromises = Array.from({ length: numberOfPages }).map(
+          (_, index) => {
+            return DevToService.stories(index + 1, "latest");
+          }
+        );
+
+        const listRes = await Promise.all(listPromises);
+        const flattenListRes = listRes.flat();
+
+        setRawData(flattenListRes);
+
+        setRows(flattenListRes);
+
+        setOptions((prev) => {
+          return {
+            ...prev,
+            yAxis: {
+              ...prev.yAxis,
+              min: 0,
+            },
+            series: [
+              {
+                type: "line",
+                name: "Dev.to",
+                data: mapOptions(flattenListRes),
+              },
+            ],
+          };
+        });
+      } catch (err: any) {
         // eslint-disable-next-line no-console
+        console.error(err);
       }
     })();
   }, [selectedWatchlist, config.category, config.timeRange]);
@@ -79,7 +101,7 @@ const OneHousing = () => {
       <ConfigOption />
       <WatchlistConfig />
 
-      <Box mt={2}>
+      <Box mt={2} sx={{ height: 500 }}>
         {config.displayType === "raw-data" && (
           <Box
             sx={{
@@ -91,7 +113,7 @@ const OneHousing = () => {
           </Box>
         )}
         {config.displayType === "table" && (
-          <DashboardTable columns={columns} rows={rows} />
+          <Table columns={columns} rows={rows} />
         )}
         {config.displayType === "chart" && (
           <HighchartsReact highcharts={Highcharts} options={options} />
@@ -101,28 +123,57 @@ const OneHousing = () => {
   );
 };
 
-export default OneHousing;
+export default DevToStories;
 
 const columns: GridColDef[] = [
-  { field: "urgent_sale", headerName: "urgent_sale", width: 100 },
-  { field: "province", headerName: "province", width: 100 },
-  { field: "legal_total_area", headerName: "legal_total_area", width: 100 },
-  { field: "max_area", headerName: "max_area", width: 100 },
-  { field: "min_area", headerName: "min_area", width: 100 },
-  { field: "max_selling_price", headerName: "max_selling_price", width: 100 },
-  { field: "min_selling_price", headerName: "min_selling_price", width: 100 },
-  { field: "min_unit_price", headerName: "min_unit_price", width: 100 },
-  { field: "number_of_bedrooms", headerName: "number_of_bedrooms", width: 100 },
-  { field: "floor_number", headerName: "floor_number", width: 100 },
+  { field: "id", headerName: "id", width: 100, groupable: false },
   {
-    field: "view_count",
-    headerName: "view_count",
-    width: 100,
+    field: "title",
+    headerName: "title",
+    groupable: false,
+    minWidth: 300,
+    flex: 1,
     renderCell: (params) => {
-      return <div>{params.row.view_count.count}</div>;
+      return (
+        <a href={`https://dev.to${params.row.path}`} target="_blank">
+          {params.value}
+        </a>
+      );
     },
   },
-  { field: "district", headerName: "district", width: 100 },
-  { field: "district_code", headerName: "district_code", width: 100 },
-  { field: "project_name", headerName: "project_name", width: 100 },
+  {
+    field: "comments_count",
+    headerName: "comments_count",
+    width: 100,
+    groupable: false,
+  },
+  {
+    field: "public_reactions_count",
+    headerName: "public_reactions_count",
+    width: 100,
+    groupable: false,
+  },
+  {
+    field: "reading_time",
+    headerName: "reading_time",
+    width: 100,
+    groupable: false,
+  },
+  {
+    field: "published_at_int",
+    headerName: "published_at_int",
+    width: 100,
+    groupable: false,
+    valueFormatter: (value) => {
+      return new Date(value * 1000).toLocaleString();
+    },
+  },
+  {
+    field: "tag_list",
+    headerName: "tag_list",
+    flex: 100,
+    renderCell: (params) => {
+      return params.value.join(", ");
+    },
+  },
 ];

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import Table from "@/@core/components/table";
-import { useRequestStore } from "@/@core/store/request";
+import { useRequestStore } from "@/features/root-api/store/request";
 import { GridColDef } from "@mui/x-data-grid-premium";
 
 const AppTable = () => {
