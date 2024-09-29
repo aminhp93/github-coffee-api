@@ -25,11 +25,10 @@ export const mapData = (data: PostsItem[]) => {
 export const getRows = (data: RawData) => {
   // data is array of object like [{symbol: 'AAPL', data: [{ postId: '1', originalContent: 'xxx' }, { postId: '2', originalContent: 'yyy' }]}]
   // i want to convert it to array of object like [{groupedSymbol: 'AAPL', postId: '1', originalContent: 'xxx'}, {groupedSymbol: 'AAPL', postId: '2', originalContent: 'yyy'}]
-
   const result = data.reduce((acc: any, item: any) => {
     const symbol = item.symbol;
-    const data = item.data;
-    const mappedData = data.map((i: any) => {
+    const data2 = item.data;
+    const mappedData = data2.map((i: any) => {
       return {
         groupedSymbol: symbol,
         id: `${symbol}-${i.postID}`,

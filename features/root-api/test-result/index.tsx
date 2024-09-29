@@ -2,10 +2,7 @@
 
 import axios from "axios";
 import { Button, Box } from "@mui/material";
-import {
-  LIST_FIREANT_API,
-  LIST_WICHART_API,
-} from "../../../features/root-api/constants";
+import { LIST_API } from "@/features/root-api/constants";
 import { TOKEN } from "@/@core/services/fireant/constants";
 import { useRequestStore } from "../store/request";
 import { getRequest } from "@/@core/services/utils";
@@ -22,10 +19,17 @@ export default function TestResult() {
   const handleTest = () => {
     const listPromise: PromiseItem[] = [];
 
-    [...LIST_WICHART_API, ...LIST_FIREANT_API].forEach((item) => {
-      listPromise.push({
-        url: item.url,
-        promise: axios(getRequest(TOKEN, item?.url)!),
+    LIST_API.forEach((item) => {
+      let token: undefined | string = undefined;
+      if (item.id === "fireant") {
+        token = TOKEN;
+      }
+
+      item.request.forEach((req) => {
+        listPromise.push({
+          url: req.url,
+          promise: axios(getRequest(token, req.url)!),
+        });
       });
     });
 

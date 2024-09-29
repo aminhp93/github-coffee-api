@@ -5,7 +5,8 @@ export type TimeRange = "1d" | "1w" | "1m" | "3m" | "6m" | "1y" | "all";
 
 export type Category =
   | "github"
-  | "dev-to"
+  | "dev-to-search"
+  | "dev-to-stories"
   | "one-housing"
   | "fireant-watchlists"
   | "fireant-post"

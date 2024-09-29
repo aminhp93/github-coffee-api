@@ -13,8 +13,9 @@ import FireantNews from "./fireant/fireant-news";
 import FireantFinancialReports from "./fireant/fireant-financial-reports";
 import FireantHistoricalPrice from "./fireant/fireant-historical-price";
 import Github from "./github";
-import DevTo from "./dev-to";
 import OneHousing from "./one-housing";
+import DevToSearch from "./dev-to/dev-to-search";
+import DevToStories from "./dev-to/dev-to-stories";
 
 export const DATA = [
   [1262304000000, 0.7537],
@@ -80,9 +81,14 @@ export const LIST_CATEGORY: {
     component: Github,
   },
   {
-    value: "dev-to",
+    value: "dev-to-search",
     label: Newspaper,
-    component: DevTo,
+    component: DevToSearch,
+  },
+  {
+    value: "dev-to-stories",
+    label: Newspaper,
+    component: DevToStories,
   },
   {
     value: "one-housing",
