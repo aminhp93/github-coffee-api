@@ -2,10 +2,29 @@
 
 import { z } from "zod";
 
+// Common
+
+const FlareTagSchema = z.object({
+  name: z.string(),
+  bg_color_hex: z.string(),
+  text_color_hex: z.string(),
+});
+
+const PublicReactionCategorySchema = z.object({
+  slug: z.string(),
+  name: z.string(),
+  icon: z.string(),
+  position: z.number(),
+});
+
 const UserSchema = z.object({
   name: z.string(),
-  profile_image_90: z.string(),
   username: z.string(),
+  slug: z.string().optional(),
+  profile_image_90: z.string(),
+  profile_image_url: z.string().optional(),
+  cached_base_subscriber: z.boolean().optional(),
+  "cached_base_subscriber?": z.boolean().optional(),
 });
 
 const OrganizationSchema = z.object({
@@ -24,41 +43,26 @@ const ArticleSchema = z.object({
   reading_time: z.number(),
   title: z.string(),
   user_id: z.number(),
-  public_reaction_categories: z.array(z.string()),
+  public_reaction_categories: z.array(PublicReactionCategorySchema),
   comments_count: z.number(),
   video_duration_string: z.string(),
   published_at_int: z.number(),
   tag_list: z.array(z.string()),
-  flare_tag: z.string().nullable(),
+  flare_tag: FlareTagSchema.nullable(),
   user: UserSchema,
-  organization: OrganizationSchema,
+  organization: OrganizationSchema.optional(),
 });
 
 export type Article = z.infer<typeof ArticleSchema>;
 export type ArticleList = Article[];
 
-const SearchResponseSchema = z.object({
+export const SearchResponseSchema = z.object({
   result: z.array(ArticleSchema),
 });
 
 export type SearchResponse = z.infer<typeof SearchResponseSchema>;
 
 // Stories
-
-const StoriesUserSchema = z.object({
-  name: z.string(),
-  username: z.string(),
-  slug: z.string(),
-  profile_image_90: z.string(),
-  profile_image_url: z.string(),
-});
-
-const ReactionCategorySchema = z.object({
-  slug: z.string(),
-  name: z.string(),
-  icon: z.string(),
-  position: z.number(),
-});
 
 const TopCommentSchema = z.object({
   comment_id: z.number(),
@@ -87,20 +91,22 @@ const StoriesItemSchema = z.object({
   experience_level_rating: z.number(),
   experience_level_rating_distribution: z.number(),
   main_image_height: z.number(),
-  user: StoriesUserSchema,
+  user: UserSchema,
   pinned: z.boolean(),
-  main_image: z.string(),
+  main_image: z.string().nullable(),
   tag_list: z.array(z.string()),
   readable_publish_date: z.string(),
-  flare_tag: z.string().nullable(),
+  flare_tag: FlareTagSchema.nullable(),
   class_name: z.string(),
   cloudinary_video_url: z.string().nullable(),
   published_at_int: z.number(),
   published_timestamp: z.string(),
   main_image_background_hex_color: z.string(),
-  public_reaction_categories: z.array(ReactionCategorySchema),
+  public_reaction_categories: z.array(PublicReactionCategorySchema),
   top_comments: z.array(TopCommentSchema),
 });
+
+export const StoriesResponseSchema = z.array(StoriesItemSchema);
 
 export type StoriesItem = z.infer<typeof StoriesItemSchema>;
 export type StoriesResponse = StoriesItem[];

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { CompanyId } from "@/features/root-api/constants";
 
 export type RequestLabel = {
   id: string;
@@ -11,4 +12,5 @@ export type Request = {
   name: string;
   id: string;
   schema?: any;
+  companyId?: CompanyId;
 };

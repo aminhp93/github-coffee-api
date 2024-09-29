@@ -9,17 +9,16 @@ import { GridColDef } from "@mui/x-data-grid-premium";
 
 // Import local files
 import { getDefaultOptions } from "@/@core/components/chart/utils";
-import DevToService from "@/@core/services/dev-to/DevTo.service";
+import DevToService from "@/@core/services/dev-to/service";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
-import { RawData } from "../types";
-import { getRows } from "../utils";
-import { mapOptions } from "./utils";
-import DashboardTable from "../@components/DashboardTable";
-import WatchlistConfig from "../fireant/@components/WatchlistConfig";
-import ConfigOption from "../@components/TimeAndDisplayConfig";
-import useConfigStore from "../useConfigStore";
+import Table from "@/@core/components/table";
+import { RawData } from "../../types";
+import { mapOptions } from "../utils";
+import WatchlistConfig from "../../fireant/@components/WatchlistConfig";
+import ConfigOption from "../../@components/TimeAndDisplayConfig";
+import useConfigStore from "../../useConfigStore";
 
-const DevTo = () => {
+const DevToStories = () => {
   const config = useConfigStore((state) => state.config);
   const selectedWatchlist = useFireantStore((state) => state.selectedWatchlist);
 
@@ -35,7 +34,7 @@ const DevTo = () => {
 
         const listPromises = Array.from({ length: numberOfPages }).map(
           (_, index) => {
-            return DevToService.getStories(index + 1, "latest");
+            return DevToService.stories(index + 1, "latest");
           }
         );
 
@@ -44,7 +43,7 @@ const DevTo = () => {
 
         setRawData(flattenListRes);
 
-        setRows(getRows(flattenListRes));
+        setRows(flattenListRes);
 
         setOptions((prev) => {
           return {
@@ -102,7 +101,7 @@ const DevTo = () => {
       <ConfigOption />
       <WatchlistConfig />
 
-      <Box mt={2}>
+      <Box mt={2} sx={{ height: 500 }}>
         {config.displayType === "raw-data" && (
           <Box
             sx={{
@@ -114,15 +113,7 @@ const DevTo = () => {
           </Box>
         )}
         {config.displayType === "table" && (
-          <DashboardTable
-            initialStateConfig={{
-              rowGrouping: {
-                model: ["groupedDate"],
-              },
-            }}
-            columns={columns}
-            rows={rows}
-          />
+          <Table columns={columns} rows={rows} />
         )}
         {config.displayType === "chart" && (
           <HighchartsReact highcharts={Highcharts} options={options} />
@@ -132,11 +123,24 @@ const DevTo = () => {
   );
 };
 
-export default DevTo;
+export default DevToStories;
 
 const columns: GridColDef[] = [
-  { field: "groupedDate", headerName: "Grouped Date", width: 150 },
   { field: "id", headerName: "id", width: 100, groupable: false },
+  {
+    field: "title",
+    headerName: "title",
+    groupable: false,
+    minWidth: 300,
+    flex: 1,
+    renderCell: (params) => {
+      return (
+        <a href={`https://dev.to${params.row.path}`} target="_blank">
+          {params.value}
+        </a>
+      );
+    },
+  },
   {
     field: "comments_count",
     headerName: "comments_count",
@@ -156,16 +160,20 @@ const columns: GridColDef[] = [
     groupable: false,
   },
   {
-    field: "title",
-    headerName: "title",
+    field: "published_at_int",
+    headerName: "published_at_int",
+    width: 100,
     groupable: false,
-    flex: 1,
+    valueFormatter: (value) => {
+      return new Date(value * 1000).toLocaleString();
+    },
+  },
+  {
+    field: "tag_list",
+    headerName: "tag_list",
+    flex: 100,
     renderCell: (params) => {
-      return (
-        <a href={`https://dev.to/${params.row.path}`} target="_blank">
-          {params.value}
-        </a>
-      );
+      return params.value.join(", ");
     },
   },
 ];

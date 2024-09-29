@@ -78,6 +78,7 @@ const RootApi = () => {
             </AccordionSummary>
             <AccordionDetails>
               <RequestComponent
+                companyId={item.id}
                 requestList={item.request}
                 response={response}
                 allResponses={allResponses}
