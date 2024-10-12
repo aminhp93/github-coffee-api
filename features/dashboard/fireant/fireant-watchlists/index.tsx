@@ -1,79 +1,46 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // Import libraries
-import { GridColDef } from "@mui/x-data-grid-premium";
 import { Box } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import chunk from "lodash/chunk";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
-// Import local files
-import WatchlistConfig from "../@components/WatchlistConfig";
+// Import local files: relative path
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import Table from "@/@core/components/table";
-import { useEffect } from "react";
 import FireantService from "@/@core/services/fireant/service";
 
-const chunkArray = (array: any[], size: number) => {
-  const result = [];
-  for (let i = 0; i < array.length; i += size) {
-    result.push(array.slice(i, i + size));
-  }
-  return result;
-};
+// Import local files: absolute path
+import { COLUMNS, CHUNK_SIZE, WAIT_TIMEOUT } from "./constants";
+import { PromiseResponse } from "./types";
+import { mapData } from "./utils";
+import WatchlistConfig from "../@components/WatchlistConfig";
 
 const FireantWatchlist = () => {
   const selectedWatchlist = useFireantStore((state) => state.selectedWatchlist);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [rows, setRows] = useState<any>([]);
   const [loading, setLoading] = useState(false);
-
-  const columns: GridColDef[] = [
-    {
-      field: "symbol",
-      headerName: "Symbol",
-      flex: 1,
-    },
-    {
-      field: "priceChange",
-      headerName: "+/-",
-      flex: 1,
-    },
-    {
-      field: "pricePercentChange",
-      headerName: "%",
-      flex: 1,
-    },
-    {
-      field: "gapOpen",
-      headerName: "gapOpen (test)",
-      flex: 1,
-    },
-    {
-      field: "putthroughValue",
-      headerName: "putthroughValue (billions)",
-      flex: 1,
-      renderCell: (params) => {
-        return params.value
-          ? `${(params.value / 1_000_000_000).toFixed(0)}`
-          : "-";
-      },
-    },
-    {
-      field: "date",
-      headerName: "date",
-      flex: 1,
-    },
-  ];
+  const [config, setConfig] = useState<string>("all");
 
   const handleTest = async (symbol: string) => {
     try {
-      // console.log(`start getting last updated of symbol: ${symbol}`);
-      const res: any = await FireantService.historicalPrice(symbol);
+      const historicalPriceData = await FireantService.historicalPrice(symbol);
+      const fundamentalData = await FireantService.fundamental(symbol);
 
       return {
         symbol,
-        data: res,
+        historicalPriceData,
+        fundamentalData,
       };
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);
+      return {
+        symbol,
+        historicalPriceData: undefined,
+        fundamentalData: undefined,
+      };
     }
   };
 
@@ -81,10 +48,10 @@ const FireantWatchlist = () => {
     (async () => {
       try {
         setLoading(true);
-        const listSymbol: any = selectedWatchlist?.symbols ?? [];
+        const listSymbol = selectedWatchlist?.symbols ?? [];
 
-        let result: any[] = [];
-        const chunkedListSymbols = chunkArray(listSymbol, 15);
+        let result: PromiseResponse[] = [];
+        const chunkedListSymbols = chunk(listSymbol, CHUNK_SIZE);
 
         for (let i = 0; i < chunkedListSymbols.length; i++) {
           const listPromises = [];
@@ -94,32 +61,17 @@ const FireantWatchlist = () => {
           }
 
           // wait 1s
-          await new Promise((resolve) => setTimeout(resolve, 500));
+          await new Promise((resolve) => setTimeout(resolve, WAIT_TIMEOUT));
           const res = await Promise.all(listPromises);
 
           result = [...result, ...res];
         }
 
-        const mappedRes = result.map((i) => {
-          const i_0 = i.data[0];
-          const i_1 = i.data[1];
-          const priceChange = Number(
-            (i_0.priceClose - i_0.priceBasic).toFixed(2)
-          );
-          return {
-            ...i_0,
-            id: i_0.symbol,
-            priceChange,
-            pricePercentChange: Number(
-              ((priceChange / i_0.priceBasic) * 100).toFixed(2)
-            ),
-            gapOpen: Number(i_0.priceLow - i_1.priceHigh).toFixed(2),
-          };
-        });
+        const mappedRes = mapData(result);
 
         setRows(mappedRes);
         setLoading(false);
-      } catch (err: any) {
+      } catch (err) {
         setLoading(false);
         const newRows = selectedWatchlist?.symbols.map((symbol) => ({
           id: symbol,
@@ -132,14 +84,72 @@ const FireantWatchlist = () => {
     })();
   }, [selectedWatchlist?.symbols]);
 
+  const controlCompany = {
+    value: config,
+    onChange: (event: React.MouseEvent<HTMLElement>, data: string) => {
+      setConfig(data);
+    },
+    exclusive: true,
+  };
+
   return (
-    <div>
-      <h1>Fireant Watchlist</h1>
-      <WatchlistConfig disabled={loading} />
-      <Box sx={{ height: "400px" }}>
-        <Table columns={columns} rows={rows} />
+    <Box>
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Box>
+          <WatchlistConfig disabled={loading} />
+        </Box>
+        <Box>
+          <ToggleButtonGroup size="small" {...controlCompany}>
+            {[
+              "all",
+              "fundamental",
+              "financialReports",
+              "financialIndicators",
+              "posts",
+              "news",
+            ].map((item) => (
+              <ToggleButton
+                value={item}
+                key={item}
+                sx={{
+                  textTransform: "none",
+                }}
+              >
+                {item}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+        </Box>
       </Box>
-    </div>
+
+      <Box
+        sx={{
+          height: "400px",
+          "& .color-red": {
+            color: "red",
+          },
+          "& .color-green": {
+            color: "green",
+          },
+          "& .color-unset": {
+            color: "unset",
+          },
+        }}
+      >
+        <Table
+          columns={COLUMNS}
+          checkboxSelection={false}
+          rows={rows}
+          initialState={{
+            columns: {
+              columnVisibilityModel: {
+                date: false,
+              },
+            },
+          }}
+        />
+      </Box>
+    </Box>
   );
 };
 

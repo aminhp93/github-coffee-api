@@ -4,16 +4,23 @@ import {
   DataGridPremium,
   GridColDef,
   GridToolbar,
+  DataGridPremiumProps,
 } from "@mui/x-data-grid-premium";
 
-type Props = {
+type Props = DataGridPremiumProps & {
   apiRef?: any;
   rows: any[];
   columns: GridColDef[];
   initialState?: any;
 };
 
-export default function Table({ apiRef, rows, columns, initialState }: Props) {
+export default function Table({
+  apiRef,
+  rows,
+  columns,
+  initialState,
+  ...rest
+}: Props) {
   return (
     <DataGridPremium
       apiRef={apiRef}
@@ -35,6 +42,7 @@ export default function Table({ apiRef, rows, columns, initialState }: Props) {
       pageSizeOptions={[5]}
       checkboxSelection
       disableRowSelectionOnClick
+      {...rest}
     />
   );
 }
