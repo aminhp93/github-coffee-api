@@ -11,9 +11,18 @@ import Table from "@/@core/components/table";
 import { useEffect } from "react";
 import FireantService from "@/@core/services/fireant/service";
 
+const chunkArray = (array: any[], size: number) => {
+  const result = [];
+  for (let i = 0; i < array.length; i += size) {
+    result.push(array.slice(i, i + size));
+  }
+  return result;
+};
+
 const FireantWatchlist = () => {
   const selectedWatchlist = useFireantStore((state) => state.selectedWatchlist);
   const [rows, setRows] = useState<any>([]);
+  const [loading, setLoading] = useState(false);
 
   const columns: GridColDef[] = [
     {
@@ -53,29 +62,70 @@ const FireantWatchlist = () => {
     },
   ];
 
+  const handleTest = async (symbol: string) => {
+    try {
+      // console.log(`start getting last updated of symbol: ${symbol}`);
+      const res: any = await FireantService.historicalPrice(symbol);
+
+      return {
+        symbol,
+        data: res,
+      };
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
     (async () => {
       try {
-        const promises: any = selectedWatchlist?.symbols.map((symbol) =>
-          FireantService.historicalPrice(symbol)
-        );
-        const res = await Promise.all(promises);
-        const mappedRes = res.map((i) => {
+        setLoading(true);
+        const listSymbol: any = selectedWatchlist?.symbols ?? [];
+
+        let result: any[] = [];
+        const chunkedListSymbols = chunkArray(listSymbol, 15);
+
+        for (let i = 0; i < chunkedListSymbols.length; i++) {
+          const listPromises = [];
+
+          for (let j = 0; j < chunkedListSymbols[i].length; j++) {
+            listPromises.push(handleTest(chunkedListSymbols[i][j]));
+          }
+
+          // wait 1s
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          const res = await Promise.all(listPromises);
+
+          result = [...result, ...res];
+        }
+
+        const mappedRes = result.map((i) => {
+          const i_0 = i.data[0];
+          const i_1 = i.data[1];
           const priceChange = Number(
-            (i[0].priceClose - i[0].priceBasic).toFixed(2)
+            (i_0.priceClose - i_0.priceBasic).toFixed(2)
           );
           return {
-            ...i[0],
-            id: i[0].symbol,
+            ...i_0,
+            id: i_0.symbol,
             priceChange,
             pricePercentChange: Number(
-              ((priceChange / i[0].priceBasic) * 100).toFixed(2)
+              ((priceChange / i_0.priceBasic) * 100).toFixed(2)
             ),
-            gapOpen: Number(i[0].priceLow - i[1].priceHigh).toFixed(2),
+            gapOpen: Number(i_0.priceLow - i_1.priceHigh).toFixed(2),
           };
         });
+
         setRows(mappedRes);
+        setLoading(false);
       } catch (err: any) {
+        setLoading(false);
+        const newRows = selectedWatchlist?.symbols.map((symbol) => ({
+          id: symbol,
+          symbol,
+        }));
+        setRows(newRows);
         // eslint-disable-next-line no-console
         console.error(err);
       }
@@ -85,7 +135,7 @@ const FireantWatchlist = () => {
   return (
     <div>
       <h1>Fireant Watchlist</h1>
-      <WatchlistConfig />
+      <WatchlistConfig disabled={loading} />
       <Box sx={{ height: "400px" }}>
         <Table columns={columns} rows={rows} />
       </Box>
