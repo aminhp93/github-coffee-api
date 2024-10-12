@@ -9,6 +9,13 @@ import {
   RrgSchema,
   FinancialReportSchema,
   HistoricalPriceSchema,
+  TimescaleMarksSchema,
+  OfficersSchema,
+  SubsidiariesSchema,
+  HoldersSchema,
+  DividendsSchema,
+  EventsSchema,
+  FinancialIndicatorsSchema,
 } from "@/@core/services/fireant/schema";
 import {
   SearchResponseSchema,
@@ -65,6 +72,20 @@ export const LIST_FIREANT_API: Request[] = Object.keys(FireantUrls).map(
       schema = FinancialReportSchema;
     } else if (key === "historicalPrice") {
       schema = HistoricalPriceSchema;
+    } else if (key === "timescaleMarks") {
+      schema = TimescaleMarksSchema;
+    } else if (key === "officers") {
+      schema = OfficersSchema;
+    } else if (key === "subsidiaries") {
+      schema = SubsidiariesSchema;
+    } else if (key === "holders") {
+      schema = HoldersSchema;
+    } else if (key === "dividends") {
+      schema = DividendsSchema;
+    } else if (key === "events") {
+      schema = EventsSchema;
+    } else if (key === "financialIndicators") {
+      schema = FinancialIndicatorsSchema;
     }
 
     return {
