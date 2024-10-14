@@ -35,8 +35,14 @@ const Dashboard = () => {
     <Box>
       <ToggleButtonGroup size="small" {...controlCompany}>
         {LIST_CATEGORY.map((item) => (
-          <ToggleButton value={item.value} key={item.value}>
-            {<item.label />}
+          <ToggleButton
+            value={item.value}
+            key={item.value}
+            sx={{
+              textTransform: "none",
+            }}
+          >
+            {/* {<item.label />} */}
             {item.value}
           </ToggleButton>
         ))}

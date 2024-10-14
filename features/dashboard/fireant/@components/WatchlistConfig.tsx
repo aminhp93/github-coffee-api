@@ -11,7 +11,11 @@ import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import FireantService from "@/@core/services/fireant/service";
 import { keyBy } from "lodash";
 
-const WatchlistConfig = () => {
+type Props = {
+  disabled?: boolean;
+};
+
+const WatchlistConfig = ({ disabled }: Props) => {
   const config = useConfigStore((state) => state.config);
   const setWatchlists = useFireantStore((state) => state.setWatchlists);
   const watchlists = useFireantStore((state) => state.watchlists);
@@ -43,6 +47,7 @@ const WatchlistConfig = () => {
             <InputLabel id="demo-simple-select-label">Watchlist</InputLabel>
             <Select
               size="small"
+              disabled={disabled}
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={selectedWatchlist?.watchlistID || ("" as any)}

@@ -1,95 +1,155 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // Import libraries
-import { GridColDef } from "@mui/x-data-grid-premium";
 import { Box } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import chunk from "lodash/chunk";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
-// Import local files
-import WatchlistConfig from "../@components/WatchlistConfig";
+// Import local files: relative path
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import Table from "@/@core/components/table";
-import { useEffect } from "react";
 import FireantService from "@/@core/services/fireant/service";
+
+// Import local files: absolute path
+import { COLUMNS, CHUNK_SIZE, WAIT_TIMEOUT } from "./constants";
+import { PromiseResponse } from "./types";
+import { mapData } from "./utils";
+import WatchlistConfig from "../@components/WatchlistConfig";
 
 const FireantWatchlist = () => {
   const selectedWatchlist = useFireantStore((state) => state.selectedWatchlist);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [rows, setRows] = useState<any>([]);
+  const [loading, setLoading] = useState(false);
+  const [config, setConfig] = useState<string>("all");
 
-  const columns: GridColDef[] = [
-    {
-      field: "symbol",
-      headerName: "Symbol",
-      flex: 1,
-    },
-    {
-      field: "priceChange",
-      headerName: "+/-",
-      flex: 1,
-    },
-    {
-      field: "pricePercentChange",
-      headerName: "%",
-      flex: 1,
-    },
-    {
-      field: "gapOpen",
-      headerName: "gapOpen (test)",
-      flex: 1,
-    },
-    {
-      field: "putthroughValue",
-      headerName: "putthroughValue (billions)",
-      flex: 1,
-      renderCell: (params) => {
-        return params.value
-          ? `${(params.value / 1_000_000_000).toFixed(0)}`
-          : "-";
-      },
-    },
-    {
-      field: "date",
-      headerName: "date",
-      flex: 1,
-    },
-  ];
+  const handleTest = async (symbol: string) => {
+    try {
+      const historicalPriceData = await FireantService.historicalPrice(symbol);
+      const fundamentalData = await FireantService.fundamental(symbol);
+
+      return {
+        symbol,
+        historicalPriceData,
+        fundamentalData,
+      };
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      return {
+        symbol,
+        historicalPriceData: undefined,
+        fundamentalData: undefined,
+      };
+    }
+  };
 
   useEffect(() => {
     (async () => {
       try {
-        const promises: any = selectedWatchlist?.symbols.map((symbol) =>
-          FireantService.historicalPrice(symbol)
-        );
-        const res = await Promise.all(promises);
-        const mappedRes = res.map((i) => {
-          const priceChange = Number(
-            (i[0].priceClose - i[0].priceBasic).toFixed(2)
-          );
-          return {
-            ...i[0],
-            id: i[0].symbol,
-            priceChange,
-            pricePercentChange: Number(
-              ((priceChange / i[0].priceBasic) * 100).toFixed(2)
-            ),
-            gapOpen: Number(i[0].priceLow - i[1].priceHigh).toFixed(2),
-          };
-        });
+        setLoading(true);
+        const listSymbol = selectedWatchlist?.symbols ?? [];
+
+        let result: PromiseResponse[] = [];
+        const chunkedListSymbols = chunk(listSymbol, CHUNK_SIZE);
+
+        for (let i = 0; i < chunkedListSymbols.length; i++) {
+          const listPromises = [];
+
+          for (let j = 0; j < chunkedListSymbols[i].length; j++) {
+            listPromises.push(handleTest(chunkedListSymbols[i][j]));
+          }
+
+          // wait 1s
+          await new Promise((resolve) => setTimeout(resolve, WAIT_TIMEOUT));
+          const res = await Promise.all(listPromises);
+
+          result = [...result, ...res];
+        }
+
+        const mappedRes = mapData(result);
+
         setRows(mappedRes);
-      } catch (err: any) {
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+        const newRows = selectedWatchlist?.symbols.map((symbol) => ({
+          id: symbol,
+          symbol,
+        }));
+        setRows(newRows);
         // eslint-disable-next-line no-console
         console.error(err);
       }
     })();
   }, [selectedWatchlist?.symbols]);
 
+  const controlCompany = {
+    value: config,
+    onChange: (event: React.MouseEvent<HTMLElement>, data: string) => {
+      setConfig(data);
+    },
+    exclusive: true,
+  };
+
   return (
-    <div>
-      <h1>Fireant Watchlist</h1>
-      <WatchlistConfig />
-      <Box sx={{ height: "400px" }}>
-        <Table columns={columns} rows={rows} />
+    <Box>
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Box>
+          <WatchlistConfig disabled={loading} />
+        </Box>
+        <Box>
+          <ToggleButtonGroup size="small" {...controlCompany}>
+            {[
+              "all",
+              "fundamental",
+              "financialReports",
+              "financialIndicators",
+              "posts",
+              "news",
+            ].map((item) => (
+              <ToggleButton
+                value={item}
+                key={item}
+                sx={{
+                  textTransform: "none",
+                }}
+              >
+                {item}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+        </Box>
       </Box>
-    </div>
+
+      <Box
+        sx={{
+          height: "400px",
+          "& .color-red": {
+            color: "red",
+          },
+          "& .color-green": {
+            color: "green",
+          },
+          "& .color-unset": {
+            color: "unset",
+          },
+        }}
+      >
+        <Table
+          columns={COLUMNS}
+          checkboxSelection={false}
+          rows={rows}
+          initialState={{
+            columns: {
+              columnVisibilityModel: {
+                date: false,
+              },
+            },
+          }}
+        />
+      </Box>
+    </Box>
   );
 };
 

@@ -15,8 +15,9 @@ import { RawData } from "../../types";
 import DashboardTable from "../../@components/DashboardTable";
 import TimeAndDisplayConfig from "../../@components/TimeAndDisplayConfig";
 import useConfigStore from "../../useConfigStore";
-import { getRows, formatNumberColumn, DIVIDER } from "./utils";
+import { getRows, formatNumberColumn } from "./utils";
 import SymbolConfig from "../../@components/SymbolConfig";
+import { NUMBER } from "@/@core/constants/unit";
 
 const FireantHistoricalPrice = () => {
   const config = useConfigStore((state) => state.config);
@@ -173,7 +174,7 @@ const columns: GridColDef[] = [
     headerName: "totalVolume",
     width: 150,
     renderCell: (params) => {
-      return formatNumberColumn(params.value, DIVIDER.million);
+      return formatNumberColumn(params.value, NUMBER.MILLION);
     },
   },
   {
@@ -181,7 +182,7 @@ const columns: GridColDef[] = [
     headerName: "dealVolume",
     width: 150,
     renderCell: (params) => {
-      return formatNumberColumn(params.value, DIVIDER.million);
+      return formatNumberColumn(params.value, NUMBER.MILLION);
     },
   },
   {
@@ -189,7 +190,7 @@ const columns: GridColDef[] = [
     headerName: "putthroughVolume",
     width: 150,
     renderCell: (params) => {
-      return formatNumberColumn(params.value, DIVIDER.million);
+      return formatNumberColumn(params.value, NUMBER.MILLION);
     },
   },
   {
