@@ -1,6 +1,6 @@
 "use client";
 
-import { Box } from "@mui/material";
+import Box from "@mui/material/Box";
 
 import { getRequest } from "../../../@core/services/utils";
 import { Response } from "./types";

@@ -1,4 +1,6 @@
-import { Box, styled } from "@mui/material";
+import {styled} from "@mui/material";
+import Box from "@mui/material/Box";
+
 import { red, green, yellow } from "@mui/material/colors";
 import RequestItem from "./RequestItem";
 import { Request } from "./types";

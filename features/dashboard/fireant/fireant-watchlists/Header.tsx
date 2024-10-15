@@ -4,21 +4,17 @@ import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
 import WatchlistConfig from "../@components/WatchlistConfig";
-import { useFireantWatchlist } from "./hooks";
 import { useFireantWatchlistStore } from "./context";
 
 const Header = () => {
-  //   const { config, setConfig, loading } = useFireantWatchlist();
   const config = useFireantWatchlistStore((state) => state.config);
   const setConfig = useFireantWatchlistStore((state) => state.setConfig);
   const loading = useFireantWatchlistStore((state) => state.loading);
 
-  console.log("header", config);
 
   const controlCompany = {
     value: config,
     onChange: (_: React.MouseEvent<HTMLElement>, data: string) => {
-      console.log(data);
       setConfig(data);
     },
     exclusive: true,

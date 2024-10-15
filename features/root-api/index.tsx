@@ -3,14 +3,15 @@
 // Import libraries
 import { useState } from "react";
 import {
-  Box,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  ToggleButton,
-  ToggleButtonGroup,
   styled,
 } from "@mui/material";
+import Box from "@mui/material/Box";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+
 import {
   ExpandMore,
   DataObject,

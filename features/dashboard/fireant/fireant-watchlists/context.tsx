@@ -49,9 +49,11 @@ import { createStore, useStore, StoreApi } from "zustand";
 import { useFireantWatchlist } from "./hooks"; // Import the hook
 
 interface FireantWatchlistState {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rows: any;
   loading: boolean;
   config: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setConfig: any;
 }
 
@@ -66,10 +68,9 @@ const FireantWatchlistProvider: React.FC<FireantWatchlistProviderProps> = ({
   children,
 }) => {
   const { rows, loading, config, setConfig } = useFireantWatchlist();
-  console.log("rows", rows);
 
   const [store] = React.useState(() =>
-    createStore<FireantWatchlistState>((set) => ({
+    createStore<FireantWatchlistState>(() => ({
       rows,
       loading,
       config,

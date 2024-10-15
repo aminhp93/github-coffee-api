@@ -1,5 +1,7 @@
 import { useRequestStore } from "../store/request";
-import { Button, Box } from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+
 import { Request } from "./types";
 import { Response } from "../response/types";
 

@@ -13,7 +13,6 @@ export const useFireantWatchlist = () => {
   const [rows, setRows] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const [config, setConfig] = useState<string>("all");
-  console.log("rows", rows);
 
   const handleTest = async (symbol: string) => {
     try {

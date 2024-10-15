@@ -3,7 +3,7 @@
 // Import libaries
 import { useEffect, useState } from "react";
 import HighchartsReact from "highcharts-react-official";
-import { Box } from "@mui/material";
+import Box from "@mui/material/Box";
 import Highcharts from "highcharts";
 import { GridColDef } from "@mui/x-data-grid-premium";
 
@@ -41,7 +41,6 @@ const DevToStories = () => {
         const listRes = await Promise.all(listPromises);
         const flattenListRes = listRes.flat();
 
-        console.log("flattenListRes", flattenListRes);
         // filter data
         // Filter data
         const filteredData = flattenListRes.filter((item) => {

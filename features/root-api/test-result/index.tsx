@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import axios from "axios";
-import { Button, Box } from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+
 import { LIST_API } from "@/features/root-api/constants";
 import { TOKEN } from "@/@core/services/fireant/constants";
 import { useRequestStore } from "../store/request";

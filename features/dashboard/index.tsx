@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { createElement } from "react";
-import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import Box from "@mui/material/Box";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
 import useConfigStore from "./useConfigStore";
 import { Category } from "./types";

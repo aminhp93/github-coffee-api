@@ -17,7 +17,6 @@ const FireantWatchlist = () => {
     return FIELDS[config];
   }, [config]);
 
-  console.log("columnVisibilityModel", FIELDS, config, columnVisibilityModel);
 
   return (
     <Box>
