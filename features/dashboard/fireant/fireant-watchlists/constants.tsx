@@ -37,13 +37,10 @@ export const HISTORICAL_PRICE_COLUMNS: GridColDef[] = [
     headerName: "gapOpen (test)",
     flex: 1,
     align: "right",
-    cellClassName: (params) => {
-      return getCellClassName(params);
-    },
   },
   {
     field: "putthroughValue",
-    headerName: "putthroughValue (billions)",
+    headerName: "putthroughValue (B)",
     align: "right",
     flex: 1,
     renderCell: (params) => {
@@ -51,48 +48,45 @@ export const HISTORICAL_PRICE_COLUMNS: GridColDef[] = [
         ? formatNumber(Number((params.value / NUMBER.BILLION).toFixed(0)))
         : "-";
     },
-    cellClassName: (params) => {
-      return getCellClassName(params);
+  },
+  {
+    field: "totalValue",
+    headerName: "Value (B)",
+    align: "right",
+    flex: 1,
+    renderCell: (params) => {
+      return params.value
+        ? formatNumber(Number((params.value / NUMBER.BILLION).toFixed(0)))
+        : "-";
     },
   },
   {
     field: "totalVolume",
-    headerName: "totalVolume",
+    headerName: "Vol",
     align: "right",
     flex: 1,
     renderCell: (params) => {
       return params.value ? formatNumber(Number(params.value.toFixed(0))) : "-";
     },
-    cellClassName: (params) => {
-      return getCellClassName(params);
-    },
   },
+
   {
     field: "changeAverageVolume5days",
-    headerName: "changeAverageVolume5days",
+    headerName: "% Vol 5D",
     align: "right",
     flex: 1,
-    cellClassName: (params) => {
-      return getCellClassName(params);
-    },
   },
   {
     field: "changePrice1Week",
-    headerName: "changePrice1Week",
+    headerName: "% Price 1W",
     align: "right",
     flex: 1,
-    cellClassName: (params) => {
-      return getCellClassName(params);
-    },
   },
   {
     field: "changePrice1Month",
-    headerName: "changePrice1Month",
+    headerName: "% Price 1M",
     align: "right",
     flex: 1,
-    cellClassName: (params) => {
-      return getCellClassName(params);
-    },
   },
   {
     field: "date",
@@ -104,7 +98,7 @@ export const HISTORICAL_PRICE_COLUMNS: GridColDef[] = [
 export const FUNDAMENTAL_COLUMNS: GridColDef[] = [
   {
     field: "marketCap",
-    headerName: "marketCap (billions)",
+    headerName: "marketCap (B)",
     align: "right",
     flex: 1,
     renderCell: (params) => {
@@ -141,3 +135,30 @@ export const COLUMNS = [
   ...HISTORICAL_PRICE_COLUMNS,
   ...FUNDAMENTAL_COLUMNS,
 ];
+
+export const LIST_FIELDS = COLUMNS.map((i) => i.field);
+const HIDDEN_FIELDS = ["date", "priceChange"];
+
+const xxx = (list?: string[]) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result: any = {};
+  LIST_FIELDS.map((i) => {
+    if (HIDDEN_FIELDS.includes(i)) {
+      result[i] = false;
+    } else {
+      if (list) {
+        result[i] = list.includes(i);
+      } else {
+        result[i] = true;
+      }
+    }
+  });
+  return result;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const FIELDS: any = {
+  all: xxx(),
+  dailyUse: xxx(["symbol", "pricePercentChange"]),
+  check: xxx(["symbol", "eps", "pe"]),
+};

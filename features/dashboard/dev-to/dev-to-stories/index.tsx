@@ -30,7 +30,7 @@ const DevToStories = () => {
   useEffect(() => {
     (async () => {
       try {
-        const numberOfPages = 10;
+        const numberOfPages = 20;
 
         const listPromises = Array.from({ length: numberOfPages }).map(
           (_, index) => {
@@ -41,9 +41,21 @@ const DevToStories = () => {
         const listRes = await Promise.all(listPromises);
         const flattenListRes = listRes.flat();
 
-        setRawData(flattenListRes);
+        console.log("flattenListRes", flattenListRes);
+        // filter data
+        // Filter data
+        const filteredData = flattenListRes.filter((item) => {
+          const tags = item.tag_list;
+          return (
+            tags.length === 0 ||
+            tags.includes("javascript") ||
+            tags.includes("typescript")
+          );
+        });
 
-        setRows(flattenListRes);
+        setRawData(filteredData);
+
+        setRows(filteredData);
 
         setOptions((prev) => {
           return {
@@ -56,7 +68,7 @@ const DevToStories = () => {
               {
                 type: "line",
                 name: "Dev.to",
-                data: mapOptions(flattenListRes),
+                data: mapOptions(filteredData),
               },
             ],
           };
