@@ -87,36 +87,42 @@ const FireantHistoricalPrice = () => {
           </Box>
         )}
         {config.displayType === "table" && (
-          <DashboardTable
-            columns={columns}
-            rows={rows}
-            initialStateConfig={{
-              columns: {
-                columnVisibilityModel: {
-                  // Hide columns status and traderName, the other columns will remain visible
-                  priceAverage: false,
-                  symbol: false,
-                  priceHigh: false,
-                  priceLow: false,
-                  priceOpen: false,
-                  buyForeignQuantity: false,
-                  buyForeignValue: false,
-                  sellForeignQuantity: false,
-                  sellForeignValue: false,
-                  buyCount: false,
-                  buyQuantity: false,
-                  sellCount: false,
-                  sellQuantity: false,
-                  adjRatio: false,
-                  currentForeignRoom: false,
-                  propTradingNetDealValue: false,
-                  propTradingNetPTValue: false,
-                  propTradingNetValue: false,
-                  unit: false,
-                },
-              },
+          <Box
+            sx={{
+              height: "600px",
             }}
-          />
+          >
+            <DashboardTable
+              columns={columns}
+              rows={rows}
+              initialStateConfig={{
+                columns: {
+                  columnVisibilityModel: {
+                    // Hide columns status and traderName, the other columns will remain visible
+                    priceAverage: false,
+                    symbol: false,
+                    priceHigh: false,
+                    priceLow: false,
+                    priceOpen: false,
+                    buyForeignQuantity: false,
+                    buyForeignValue: false,
+                    sellForeignQuantity: false,
+                    sellForeignValue: false,
+                    buyCount: false,
+                    buyQuantity: false,
+                    sellCount: false,
+                    sellQuantity: false,
+                    adjRatio: false,
+                    currentForeignRoom: false,
+                    propTradingNetDealValue: false,
+                    propTradingNetPTValue: false,
+                    propTradingNetValue: false,
+                    unit: false,
+                  },
+                },
+              }}
+            />
+          </Box>
         )}
         {config.displayType === "chart" && (
           <HighchartsReact highcharts={Highcharts} options={options} />

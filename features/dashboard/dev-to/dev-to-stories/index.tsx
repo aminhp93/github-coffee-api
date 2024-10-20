@@ -42,8 +42,17 @@ const DevToStories = () => {
         const flattenListRes = listRes.flat();
 
         setRawData(flattenListRes);
+        // Filter data
+        const filteredData = flattenListRes.filter((item) => {
+          const tags = item.tag_list;
+          return (
+            tags.length === 0 ||
+            tags.includes("javascript") ||
+            tags.includes("typescript")
+          );
+        });
 
-        setRows(flattenListRes);
+        setRows(filteredData);
 
         setOptions((prev) => {
           return {
