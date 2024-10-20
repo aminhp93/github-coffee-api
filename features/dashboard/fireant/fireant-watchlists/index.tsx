@@ -7,8 +7,8 @@ import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import Table from "@/@core/components/table";
 
 // Import local files: absolute path
-import { COLUMNS, getFields } from "./constants";
-import { useFireantWatchlistStore } from "./context";
+import { getColumns, getFields } from "./utils";
+import { useFireantWatchlistStore, FireantWatchlistProvider } from "./context";
 import SymbolDialog from "./SymbolDialog";
 import Header from "./Header";
 
@@ -29,7 +29,7 @@ const FireantWatchlist = () => {
   );
 
   const columns = useMemo(() => {
-    return COLUMNS(onClickSymbol);
+    return getColumns(onClickSymbol);
   }, [onClickSymbol]);
 
   const columnVisibilityModel = useMemo(() => {
@@ -44,13 +44,16 @@ const FireantWatchlist = () => {
         sx={{
           height: "600px",
           "& .color-red": {
-            color: "red",
+            color: "rgb(238, 84, 66)",
           },
           "& .color-green": {
-            color: "green",
+            color: "rgb(0, 170, 0)",
           },
           "& .color-unset": {
             color: "unset",
+          },
+          "& .color-yellow": {
+            color: "rgb(204, 170, 0)",
           },
         }}
       >
@@ -77,4 +80,12 @@ const FireantWatchlist = () => {
   );
 };
 
-export default FireantWatchlist;
+const WrapperFireantWatchlist = () => {
+  return (
+    <FireantWatchlistProvider>
+      <FireantWatchlist />
+    </FireantWatchlistProvider>
+  );
+};
+
+export default WrapperFireantWatchlist;

@@ -1,6 +1,17 @@
 import { GridCellParams } from "@mui/x-data-grid-premium";
 import { PromiseResponse } from "./types";
 import { HistoricalPriceResponse } from "@/@core/services/fireant/schema";
+import { GridColDef } from "@mui/x-data-grid-premium";
+
+import {
+  HIDDEN_FIELDS,
+  DAYS_IN_WEEK,
+  DAYS_IN_MONTH,
+  BASE_COLUMNS,
+  HISTORICAL_PRICE_COLUMNS,
+  FUNDAMENTAL_COLUMNS,
+} from "./constants";
+import { HandleClickSymbol } from "./types";
 
 const getChangeAverageVolume5Days = (data: HistoricalPriceResponse) => {
   // current volume
@@ -16,22 +27,25 @@ const getChangeAverageVolume5Days = (data: HistoricalPriceResponse) => {
   );
 };
 
-const getChangePrice1Week = (data: HistoricalPriceResponse) => {
+const getChangePrice = (data: HistoricalPriceResponse, numberOfDay: number) => {
   // current price
   const currentPrice = data[0].priceClose;
-  // 1 week ago price
-  const price1Week = data[5].priceClose;
+  const price1Week = data[numberOfDay].priceClose;
   // change in price
   return Number(((currentPrice - price1Week) / price1Week) * 100).toFixed(2);
 };
 
-const getChangePrice1Month = (data: HistoricalPriceResponse) => {
-  // current price
-  const currentPrice = data[0].priceClose;
-  // 1 month ago price
-  const price1Month = data[21].priceClose;
-  // change in price
-  return Number(((currentPrice - price1Month) / price1Month) * 100).toFixed(2);
+const getNumberPutThrough = (
+  data: HistoricalPriceResponse,
+  numberOfDay: number
+) => {
+  let count = 0;
+  for (let i = 0; i < numberOfDay; i++) {
+    if (data[i].putthroughValue) {
+      count++;
+    }
+  }
+  return count;
 };
 
 export const mapData = (result: PromiseResponse[]) => {
@@ -54,8 +68,23 @@ export const mapData = (result: PromiseResponse[]) => {
     const changeAverageVolume5days = getChangeAverageVolume5Days(
       i.historicalPriceData
     );
-    const changePrice1Week = getChangePrice1Week(i.historicalPriceData);
-    const changePrice1Month = getChangePrice1Month(i.historicalPriceData);
+    const changePrice1Week = getChangePrice(
+      i.historicalPriceData,
+      DAYS_IN_WEEK
+    );
+    const changePrice1Month = getChangePrice(
+      i.historicalPriceData,
+      DAYS_IN_MONTH
+    );
+    // count the number of put through trades in the last week
+    const numberPutThrough1Week = getNumberPutThrough(
+      i.historicalPriceData,
+      DAYS_IN_WEEK
+    );
+    const numberPutThrough1Month = getNumberPutThrough(
+      i.historicalPriceData,
+      DAYS_IN_MONTH
+    );
 
     // Fundamental
     const marketCap = i.fundamentalData?.marketCap;
@@ -73,6 +102,8 @@ export const mapData = (result: PromiseResponse[]) => {
       changeAverageVolume5days,
       changePrice1Week,
       changePrice1Month,
+      numberPutThrough1Week,
+      numberPutThrough1Month,
       // Fundamental
       marketCap,
       pe,
@@ -88,7 +119,51 @@ export const formatNumber = (number: number) => {
 
 export const getCellClassName = (params: GridCellParams) => {
   const xxx = params.row.priceChange;
+  if (xxx === 0) return "color-yellow";
   if (xxx > 0) return "color-green";
   if (xxx < 0) return "color-red";
   return "color-unset";
+};
+
+type ColumnVisibilityModel = {
+  [key: string]: boolean;
+};
+
+const xxx = (columns: GridColDef[], list?: string[]): ColumnVisibilityModel => {
+  const result: ColumnVisibilityModel = {};
+
+  columns
+    .map((i) => i.field)
+    .map((i) => {
+      if (HIDDEN_FIELDS.includes(i)) {
+        result[i] = false;
+      } else {
+        if (list) {
+          result[i] = list.includes(i);
+        } else {
+          result[i] = true;
+        }
+      }
+    });
+  return result;
+};
+
+export const getFields = (
+  columns: GridColDef[]
+): {
+  [key: string]: ColumnVisibilityModel;
+} => {
+  return {
+    all: xxx(columns),
+    dailyUse: xxx(columns, ["symbol", "pricePercentChange"]),
+    check: xxx(columns, ["symbol", "eps", "pe"]),
+  };
+};
+
+export const getColumns = (onClickSymbol: HandleClickSymbol) => {
+  return [
+    ...BASE_COLUMNS(onClickSymbol),
+    ...HISTORICAL_PRICE_COLUMNS,
+    ...FUNDAMENTAL_COLUMNS,
+  ];
 };

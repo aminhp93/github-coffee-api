@@ -2,10 +2,14 @@ import { GridColDef } from "@mui/x-data-grid-premium";
 import { formatNumber, getCellClassName } from "./utils";
 import { NUMBER } from "@/@core/constants/unit";
 import Box from "@mui/material/Box";
+import { HandleClickSymbol } from "./types";
 
 const MAX_WIDTH = 200;
-
-type HandleClickSymbol = (symbol: string) => void;
+export const CHUNK_SIZE = 15;
+export const WAIT_TIMEOUT = 500;
+export const HIDDEN_FIELDS = ["date", "priceChange"];
+export const DAYS_IN_WEEK = 5;
+export const DAYS_IN_MONTH = 21;
 
 export const BASE_COLUMNS = (onClickSymbol?: HandleClickSymbol) => {
   return [
@@ -69,6 +73,21 @@ export const HISTORICAL_PRICE_COLUMNS: GridColDef[] = [
     },
     maxWidth: MAX_WIDTH,
   },
+  {
+    field: "numberPutThrough1Week",
+    headerName: "numberPutThrough1Week",
+    align: "right",
+    flex: 1,
+    maxWidth: MAX_WIDTH,
+  },
+  {
+    field: "numberPutThrough1Month",
+    headerName: "numberPutThrough1Month",
+    align: "right",
+    flex: 1,
+    maxWidth: MAX_WIDTH,
+  },
+
   {
     field: "totalValue",
     headerName: "Value (B)",
@@ -154,51 +173,3 @@ export const FUNDAMENTAL_COLUMNS: GridColDef[] = [
     },
   },
 ];
-
-export const CHUNK_SIZE = 15;
-export const WAIT_TIMEOUT = 500;
-
-export const COLUMNS = (onClickSymbol: HandleClickSymbol) => {
-  return [
-    ...BASE_COLUMNS(onClickSymbol),
-    ...HISTORICAL_PRICE_COLUMNS,
-    ...FUNDAMENTAL_COLUMNS,
-  ];
-};
-
-const HIDDEN_FIELDS = ["date", "priceChange"];
-
-type ColumnVisibilityModel = {
-  [key: string]: boolean;
-};
-
-const xxx = (columns: GridColDef[], list?: string[]): ColumnVisibilityModel => {
-  const result: ColumnVisibilityModel = {};
-
-  columns
-    .map((i) => i.field)
-    .map((i) => {
-      if (HIDDEN_FIELDS.includes(i)) {
-        result[i] = false;
-      } else {
-        if (list) {
-          result[i] = list.includes(i);
-        } else {
-          result[i] = true;
-        }
-      }
-    });
-  return result;
-};
-
-export const getFields = (
-  columns: GridColDef[]
-): {
-  [key: string]: ColumnVisibilityModel;
-} => {
-  return {
-    all: xxx(columns),
-    dailyUse: xxx(columns, ["symbol", "pricePercentChange"]),
-    check: xxx(columns, ["symbol", "eps", "pe"]),
-  };
-};
