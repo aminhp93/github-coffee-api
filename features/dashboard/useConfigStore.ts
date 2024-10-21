@@ -17,7 +17,7 @@ const useConfigStore = create<ConfigStore>((set) => ({
   config: {
     displayType: "raw-data",
     timeRange: "1w",
-    category: "fireant-post",
+    category: "fireant-watchlists",
   },
   setConfig: (data) =>
     set(

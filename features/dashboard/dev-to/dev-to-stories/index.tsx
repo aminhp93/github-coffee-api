@@ -14,7 +14,7 @@ import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import Table from "@/@core/components/table";
 import { RawData } from "../../types";
 import { mapOptions } from "../utils";
-import WatchlistConfig from "../../fireant/@components/WatchlistConfig";
+import WatchlistConfig from "../../fireant/@core/WatchlistConfig";
 import ConfigOption from "../../@components/TimeAndDisplayConfig";
 import useConfigStore from "../../useConfigStore";
 
@@ -42,8 +42,17 @@ const DevToStories = () => {
         const flattenListRes = listRes.flat();
 
         setRawData(flattenListRes);
+        // Filter data
+        const filteredData = flattenListRes.filter((item) => {
+          const tags = item.tag_list;
+          return (
+            tags.length === 0 ||
+            tags.includes("javascript") ||
+            tags.includes("typescript")
+          );
+        });
 
-        setRows(flattenListRes);
+        setRows(filteredData);
 
         setOptions((prev) => {
           return {

@@ -8,3 +8,5 @@ export type PromiseResponse = {
   fundamentalData?: FundamentalResponse;
   historicalPriceData?: HistoricalPriceResponse;
 };
+
+export type HandleClickSymbol = (symbol: string) => void;
