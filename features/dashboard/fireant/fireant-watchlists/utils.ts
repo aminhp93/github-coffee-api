@@ -156,7 +156,13 @@ export const getFields = (
   return {
     all: xxx(columns),
     dailyUse: xxx(columns, ["symbol", "pricePercentChange"]),
-    check: xxx(columns, ["symbol", "eps", "pe"]),
+    check: xxx(columns, [
+      "symbol",
+      "eps",
+      "pe",
+      "numberPutThrough1Week",
+      "numberPutThrough1Month",
+    ]),
   };
 };
 

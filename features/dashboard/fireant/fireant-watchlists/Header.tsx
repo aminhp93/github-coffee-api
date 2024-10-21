@@ -2,10 +2,16 @@
 import Box from "@mui/material/Box";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import { GridColDef } from "@mui/x-data-grid-premium";
 import WatchlistConfig from "../@core/WatchlistConfig";
 import { useFireantWatchlistStore } from "./context";
+import { getFields } from "./utils";
 
-const Header = () => {
+type Props = {
+  columns: GridColDef[];
+};
+
+const Header = (props: Props) => {
   const config = useFireantWatchlistStore((state) => state.config);
   const setConfig = useFireantWatchlistStore((state) => state.setConfig);
   const loading = useFireantWatchlistStore((state) => state.loading);
@@ -18,6 +24,8 @@ const Header = () => {
     exclusive: true,
   };
 
+  const listKeys = Object.keys(getFields(props.columns));
+
   return (
     <Box sx={{ display: "flex", justifyContent: "space-between" }}>
       <Box>
@@ -25,16 +33,7 @@ const Header = () => {
       </Box>
       <Box>
         <ToggleButtonGroup size="small" {...controlCompany}>
-          {[
-            "all",
-            "dailyUse",
-            "check",
-            "fundamental",
-            "financialReports",
-            "financialIndicators",
-            "posts",
-            "news",
-          ].map((item) => (
+          {listKeys.map((item) => (
             <ToggleButton
               value={item}
               key={item}

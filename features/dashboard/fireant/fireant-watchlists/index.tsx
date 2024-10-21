@@ -34,11 +34,11 @@ const FireantWatchlist = () => {
 
   const columnVisibilityModel = useMemo(() => {
     return getFields(columns)[config];
-  }, [columns, config]);
+  }, [config, columns]);
 
   return (
     <Box>
-      <Header />
+      <Header columns={columns} />
 
       <Box
         sx={{
@@ -61,11 +61,7 @@ const FireantWatchlist = () => {
           columns={columns}
           checkboxSelection={false}
           rows={rows}
-          initialState={{
-            columns: {
-              columnVisibilityModel,
-            },
-          }}
+          columnVisibilityModel={columnVisibilityModel}
         />
       </Box>
       {openSymbolDialog && (
