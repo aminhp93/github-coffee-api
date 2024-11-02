@@ -15,8 +15,9 @@ import { RawData } from "../../types";
 import DashboardTable from "../../@components/DashboardTable";
 import TimeAndDisplayConfig from "../../@components/TimeAndDisplayConfig";
 import useConfigStore from "../../useConfigStore";
-import { getRows, formatNumberColumn, DIVIDER } from "./utils";
+import { getRows, formatNumberColumn } from "./utils";
 import SymbolConfig from "../../@components/SymbolConfig";
+import { NUMBER } from "@/@core/constants/unit";
 
 const FireantHistoricalPrice = () => {
   const config = useConfigStore((state) => state.config);
@@ -86,36 +87,42 @@ const FireantHistoricalPrice = () => {
           </Box>
         )}
         {config.displayType === "table" && (
-          <DashboardTable
-            columns={columns}
-            rows={rows}
-            initialStateConfig={{
-              columns: {
-                columnVisibilityModel: {
-                  // Hide columns status and traderName, the other columns will remain visible
-                  priceAverage: false,
-                  symbol: false,
-                  priceHigh: false,
-                  priceLow: false,
-                  priceOpen: false,
-                  buyForeignQuantity: false,
-                  buyForeignValue: false,
-                  sellForeignQuantity: false,
-                  sellForeignValue: false,
-                  buyCount: false,
-                  buyQuantity: false,
-                  sellCount: false,
-                  sellQuantity: false,
-                  adjRatio: false,
-                  currentForeignRoom: false,
-                  propTradingNetDealValue: false,
-                  propTradingNetPTValue: false,
-                  propTradingNetValue: false,
-                  unit: false,
-                },
-              },
+          <Box
+            sx={{
+              height: "600px",
             }}
-          />
+          >
+            <DashboardTable
+              columns={columns}
+              rows={rows}
+              initialStateConfig={{
+                columns: {
+                  columnVisibilityModel: {
+                    // Hide columns status and traderName, the other columns will remain visible
+                    priceAverage: false,
+                    symbol: false,
+                    priceHigh: false,
+                    priceLow: false,
+                    priceOpen: false,
+                    buyForeignQuantity: false,
+                    buyForeignValue: false,
+                    sellForeignQuantity: false,
+                    sellForeignValue: false,
+                    buyCount: false,
+                    buyQuantity: false,
+                    sellCount: false,
+                    sellQuantity: false,
+                    adjRatio: false,
+                    currentForeignRoom: false,
+                    propTradingNetDealValue: false,
+                    propTradingNetPTValue: false,
+                    propTradingNetValue: false,
+                    unit: false,
+                  },
+                },
+              }}
+            />
+          </Box>
         )}
         {config.displayType === "chart" && (
           <HighchartsReact highcharts={Highcharts} options={options} />
@@ -173,7 +180,7 @@ const columns: GridColDef[] = [
     headerName: "totalVolume",
     width: 150,
     renderCell: (params) => {
-      return formatNumberColumn(params.value, DIVIDER.million);
+      return formatNumberColumn(params.value, NUMBER.MILLION);
     },
   },
   {
@@ -181,7 +188,7 @@ const columns: GridColDef[] = [
     headerName: "dealVolume",
     width: 150,
     renderCell: (params) => {
-      return formatNumberColumn(params.value, DIVIDER.million);
+      return formatNumberColumn(params.value, NUMBER.MILLION);
     },
   },
   {
@@ -189,7 +196,7 @@ const columns: GridColDef[] = [
     headerName: "putthroughVolume",
     width: 150,
     renderCell: (params) => {
-      return formatNumberColumn(params.value, DIVIDER.million);
+      return formatNumberColumn(params.value, NUMBER.MILLION);
     },
   },
   {

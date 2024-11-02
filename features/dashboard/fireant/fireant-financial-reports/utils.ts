@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { GridColDef } from "@mui/x-data-grid-premium";
+import { NUMBER } from "@/@core/constants/unit";
 
 export const getRows = (data: any) => {
   const result: any = [];
@@ -41,7 +42,7 @@ export const getColumns = (columns: any): GridColDef[] => {
 
 const formatNumberColumn = (value: number) => {
   // divide by 1 billion
-  const divived_value = value / 1_000_000_000;
+  const divived_value = value / NUMBER.BILLION;
   // divived_value is like 12345,67. Format it like 12,345
   return divived_value.toLocaleString("en-US", {
     maximumFractionDigits: 0,

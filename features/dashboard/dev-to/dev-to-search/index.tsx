@@ -13,7 +13,7 @@ import DevToService from "@/@core/services/dev-to/service";
 import useFireantStore from "@/@core/services/fireant/useFireantStore";
 import { RawData } from "../../types";
 import { mapOptions } from "../utils";
-import WatchlistConfig from "../../fireant/@components/WatchlistConfig";
+import WatchlistConfig from "../../fireant/@core/WatchlistConfig";
 import ConfigOption from "../../@components/TimeAndDisplayConfig";
 import useConfigStore from "../../useConfigStore";
 import Table from "@/@core/components/table";
