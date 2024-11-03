@@ -22,7 +22,10 @@ import {
   SearchResponseSchema,
   StoriesResponseSchema,
 } from "@/@core/services/dev-to/schema";
-import { NavHistoryResponseSchema } from "@/@core/services/f-market/schema";
+import {
+  NavHistoryResponseSchema,
+  FilterProductsResponseSchema,
+} from "@/@core/services/f-market/schema";
 import FireantService, {
   baseURL as FireantBaseURL,
 } from "@/@core/services/fireant/service";
@@ -115,6 +118,8 @@ export const LIST_FMARKET_API: Request[] = Object.keys(FMarketUrls).map(
     let schema;
     if (key === "getNavHistory") {
       schema = NavHistoryResponseSchema;
+    } else if (key === "filterProducts") {
+      schema = FilterProductsResponseSchema;
     }
 
     return {

@@ -30,6 +30,20 @@ const FMarketService = {
         toDate: "20241105",
       },
     }),
+  filterProducts: () =>
+    axiosInstance({
+      url: FMarketUrls.filterProducts(),
+      method: "POST",
+      data: {
+        fundAssetTypes: ["STOCK"],
+        isIpo: false,
+        page: 1,
+        pageSize: 1000,
+        sortField: "navTo12Months",
+        sortOrder: "DESC",
+        types: ["NEW_FUND", "TRADING_FUND"],
+      },
+    }),
 };
 
 export default FMarketService;
