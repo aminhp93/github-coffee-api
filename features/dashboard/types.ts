@@ -12,6 +12,7 @@ export type Category =
   | "fireant-post"
   | "fireant-news"
   | "fireant-financial-report"
-  | "fireant-historical-price";
+  | "fireant-historical-price"
+  | "f-market";
 
 export type RawData = any;

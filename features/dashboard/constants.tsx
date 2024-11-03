@@ -16,6 +16,7 @@ import Github from "./github";
 import OneHousing from "./one-housing";
 import DevToSearch from "./dev-to/dev-to-search";
 import DevToStories from "./dev-to/dev-to-stories";
+import FMarket from "./f-market";
 
 export const DATA = [
   [1262304000000, 0.7537],
@@ -48,7 +49,7 @@ export const LIST_DISPLAY = [
 export const LIST_CATEGORY: {
   value: Category;
   label: any;
-  component: any;
+  component: () => JSX.Element;
 }[] = [
   {
     value: "fireant-watchlists",
@@ -94,6 +95,11 @@ export const LIST_CATEGORY: {
     value: "one-housing",
     label: Newspaper,
     component: OneHousing,
+  },
+  {
+    value: "f-market",
+    label: Newspaper,
+    component: FMarket,
   },
 ];
 

@@ -1,4 +1,3 @@
-import { GridCellParams } from "@mui/x-data-grid-premium";
 import { PromiseResponse } from "./types";
 import { HistoricalPriceResponse } from "@/@core/services/fireant/schema";
 import { GridColDef } from "@mui/x-data-grid-premium";
@@ -117,11 +116,10 @@ export const formatNumber = (number: number) => {
   return new Intl.NumberFormat().format(number);
 };
 
-export const getCellClassName = (params: GridCellParams) => {
-  const xxx = params.row.priceChange;
-  if (xxx === 0) return "color-yellow";
-  if (xxx > 0) return "color-green";
-  if (xxx < 0) return "color-red";
+export const getCellClassName = (data: number) => {
+  if (data === 0) return "color-yellow";
+  if (data > 0) return "color-green";
+  if (data < 0) return "color-red";
   return "color-unset";
 };
 

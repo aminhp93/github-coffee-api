@@ -27,7 +27,7 @@ export const BASE_COLUMNS = (onClickSymbol?: HandleClickSymbol) => {
         );
       },
       cellClassName: (params) => {
-        return getCellClassName(params);
+        return getCellClassName(params.row.priceChange);
       },
     },
   ] as GridColDef[];
@@ -41,7 +41,7 @@ export const HISTORICAL_PRICE_COLUMNS: GridColDef[] = [
     flex: 1,
     align: "right",
     cellClassName: (params) => {
-      return getCellClassName(params);
+      return getCellClassName(params.row.priceChange);
     },
   },
   {
@@ -50,7 +50,7 @@ export const HISTORICAL_PRICE_COLUMNS: GridColDef[] = [
     flex: 1,
     align: "right",
     cellClassName: (params) => {
-      return getCellClassName(params);
+      return getCellClassName(params.row.priceChange);
     },
     maxWidth: MAX_WIDTH,
   },
