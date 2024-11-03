@@ -1,6 +1,7 @@
 import { Request } from "@/features/root-api/request/types";
 import { FireantUrls } from "@/@core/services/fireant/constants";
 import { DevToUrls } from "@/@core/services/dev-to/constants";
+import { FMarketUrls } from "@/@core/services/f-market/constants";
 import {
   FundamentalSchema,
   PostSchema,
@@ -21,19 +22,29 @@ import {
   SearchResponseSchema,
   StoriesResponseSchema,
 } from "@/@core/services/dev-to/schema";
-import { baseURL as FireantBaseURL } from "@/@core/services/fireant/service";
-import { baseURL as DevToBaseURL } from "@/@core/services/dev-to/service";
+import { NavHistoryResponseSchema } from "@/@core/services/f-market/schema";
+import FireantService, {
+  baseURL as FireantBaseURL,
+} from "@/@core/services/fireant/service";
+import DevToService, {
+  baseURL as DevToBaseURL,
+} from "@/@core/services/dev-to/service";
+import FMarketService, {
+  baseURL as FMarketBaseURL,
+} from "@/@core/services/f-market/service";
 
 export const LIST_WICHART_API: Request[] = [
   {
     url: "https://wifeed.vn/api/thong-tin-co-phieu/danh-sach-ma-chung-khoan?loaidn=1&san=HOSE",
     name: "Danh sách mã chứng khoán",
     id: "1",
+    service: null,
   },
   {
     url: "https://wifeed.vn/api/thong-bao-api/cap-nhat-du-lieu?page=1&limit=100",
     name: "Thông báo cập nhật dữ liệu",
     id: "2",
+    service: null,
   },
 ];
 
@@ -50,6 +61,7 @@ export const LIST_DEVTO_API: Request[] = Object.keys(DevToUrls).map((key) => {
     name: key,
     id: key,
     schema,
+    service: DevToService,
   };
 });
 
@@ -93,11 +105,29 @@ export const LIST_FIREANT_API: Request[] = Object.keys(FireantUrls).map(
       name: key,
       id: key,
       schema,
+      service: FireantService,
     };
   }
 );
 
-export type CompanyId = "wichart" | "fireant" | "devTo";
+export const LIST_FMARKET_API: Request[] = Object.keys(FMarketUrls).map(
+  (key) => {
+    let schema;
+    if (key === "getNavHistory") {
+      schema = NavHistoryResponseSchema;
+    }
+
+    return {
+      url: FMarketBaseURL + FMarketUrls[key](),
+      name: key,
+      id: key,
+      schema,
+      service: FMarketService,
+    };
+  }
+);
+
+export type CompanyId = "wichart" | "fireant" | "devTo" | "fMarket";
 
 export const LIST_API: {
   id: CompanyId;
@@ -118,5 +148,10 @@ export const LIST_API: {
     id: "devTo",
     label: "Dev.to",
     request: LIST_DEVTO_API,
+  },
+  {
+    id: "fMarket",
+    label: "FMarket",
+    request: LIST_FMARKET_API,
   },
 ];

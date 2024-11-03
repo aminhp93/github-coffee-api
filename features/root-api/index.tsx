@@ -19,7 +19,6 @@ import {
 } from "@mui/icons-material";
 
 // Import local files: relative path
-import { TOKEN } from "@/@core/services/fireant/constants";
 import Chart from "@/@core/components/chart";
 
 // Import local files: absolute path
@@ -93,13 +92,7 @@ const RootApi = () => {
             {children}
           </ToggleButtonGroup>
           {display === "raw-api" && (
-            <ResponseComponent
-              requestObject={{
-                token: TOKEN,
-                url: request?.url,
-              }}
-              response={response}
-            />
+            <ResponseComponent request={request} response={response} />
           )}
 
           {display === "table" && <AppTable />}
