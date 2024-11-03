@@ -2,12 +2,9 @@ import { create } from "zustand";
 import { produce } from "immer";
 import { Request } from "../request/types";
 import { Response } from "../response/types";
-import axios from "axios";
-import { getRequest } from "@/@core/services/utils";
-
 import { useEffect } from "react";
-import { TOKEN } from "@/@core/services/fireant/constants";
 import { LIST_API } from "../constants";
+import { getRequest } from "@/@core/utils/request";
 
 export type RequestStore = {
   request: Request | null;
@@ -64,19 +61,14 @@ export const useGetRequest = () => {
 
     (async () => {
       try {
-        let token;
-        if (request.companyId === "fireant") {
-          token = TOKEN;
-        }
-        const res = await axios(getRequest(token, request?.url)!);
-
+        const res = await getRequest(request);
         // find item by url
         const found = LIST_API.map((i) => i.request)
           .flat()
           .find((i) => i.url === request.url);
 
         if (found?.schema) {
-          found.schema.parse(res.data);
+          found.schema.parse(res);
         }
 
         const result: Response = {

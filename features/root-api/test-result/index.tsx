@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import axios from "axios";
 import { Button, Box } from "@mui/material";
 import { LIST_API } from "@/features/root-api/constants";
-import { TOKEN } from "@/@core/services/fireant/constants";
 import { useRequestStore } from "../store/request";
-import { getRequest } from "@/@core/services/utils";
+import { getRequest } from "@/@core/utils/request";
 
 type PromiseItem = {
   url: string;
@@ -20,16 +18,14 @@ export default function TestResult() {
     const listPromise: PromiseItem[] = [];
 
     LIST_API.forEach((item) => {
-      let token: undefined | string = undefined;
-      if (item.id === "fireant") {
-        token = TOKEN;
-      }
-
       item.request.forEach((req) => {
-        listPromise.push({
-          url: req.url,
-          promise: axios(getRequest(token, req.url)!),
-        });
+        const promise = getRequest(req);
+        if (promise) {
+          listPromise.push({
+            url: req.url,
+            promise,
+          });
+        }
       });
     });
 

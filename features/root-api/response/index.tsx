@@ -2,22 +2,18 @@
 
 import { Box } from "@mui/material";
 
-import { getRequest } from "../../../@core/services/utils";
 import { Response } from "./types";
+import { Request } from "../request/types";
 
 type Props = {
-  requestObject: {
-    token: string;
-    url?: string;
-  };
+  request: Request | null;
   response: Response | null;
 };
 
-const ResponseComponent = ({ requestObject, response }: Props) => {
-  const requestData = getRequest(requestObject.token, requestObject.url);
+const ResponseComponent = ({ request, response }: Props) => {
   return (
     <>
-      {response && requestData ? (
+      {response && request ? (
         <Box
           sx={{
             display: "grid",
@@ -32,7 +28,7 @@ const ResponseComponent = ({ requestObject, response }: Props) => {
           <Box>
             <Box>Request</Box>
             <Box>
-              <pre>{JSON.stringify(requestData, null, 2)}</pre>
+              <pre>{JSON.stringify(request.name, null, 2)}</pre>
             </Box>
           </Box>
           <Box>

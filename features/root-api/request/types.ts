@@ -13,4 +13,5 @@ export type Request = {
   id: string;
   schema?: any;
   companyId?: CompanyId;
+  service: any;
 };
