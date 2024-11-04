@@ -16,33 +16,11 @@ import ConfigOption from "../@components/TimeAndDisplayConfig";
 import useConfigStore from "../useConfigStore";
 import Table from "@/@core/components/table";
 import FMarketService from "@/@core/services/f-market/service";
-import { NavHistoryResponse } from "@/@core/services/f-market/schema";
 import {
   formatNumber,
   getCellClassName,
 } from "@/features/dashboard/fireant/fireant-watchlists/utils";
-
-function mapData(result: NavHistoryResponse) {
-  // eslint-disable-next-line no-console
-  console.log("result", result);
-  return result.data.map((i, index) => {
-    // Validate data
-    const currentNav = i.nav;
-    let navChange;
-    let navChangePercent;
-    if (index > 0) {
-      const previousNav = result.data[index - 1].nav;
-      navChange = currentNav - previousNav;
-      navChangePercent = (navChange / previousNav) * 100;
-    }
-
-    return {
-      ...i,
-      navChange,
-      navChangePercent,
-    };
-  });
-}
+import { mapData } from "./utils";
 
 const FMarket = () => {
   const config = useConfigStore((state) => state.config);
@@ -119,7 +97,7 @@ const columns: GridColDef[] = [
   {
     field: "nav",
     headerName: "nav",
-    minWidth: 300,
+    minWidth: 120,
     align: "right",
     renderCell: (params) => {
       return params.value ? formatNumber(Number(params.value.toFixed(0))) : "-";
@@ -128,7 +106,7 @@ const columns: GridColDef[] = [
   {
     field: "navChange",
     headerName: "navChange",
-    minWidth: 300,
+    minWidth: 120,
     align: "right",
     renderCell: (params) => {
       return params.value ? formatNumber(Number(params.value.toFixed(0))) : "-";
@@ -137,7 +115,7 @@ const columns: GridColDef[] = [
   {
     field: "navChangePercent",
     headerName: "navChangePercent",
-    minWidth: 300,
+    minWidth: 120,
     align: "right",
     cellClassName: (params) => {
       return getCellClassName(params.row.navChange);
@@ -146,10 +124,33 @@ const columns: GridColDef[] = [
       return params.value ? formatNumber(Number(params.value.toFixed(2))) : "-";
     },
   },
-
   {
     field: "navDate",
     headerName: "navDate",
-    minWidth: 300,
+    minWidth: 120,
+  },
+  {
+    field: "navAll",
+    headerName: "navAll",
+    minWidth: 120,
+    renderCell: (params) => {
+      return params.value ? formatNumber(Number(params.value.toFixed(2))) : "-";
+    },
+  },
+  {
+    field: "navFirstOfMonth",
+    headerName: "navFirstOfMonth",
+    minWidth: 120,
+    renderCell: (params) => {
+      return params.value ? formatNumber(Number(params.value.toFixed(2))) : "-";
+    },
+  },
+  {
+    field: "navLastOfMonth",
+    headerName: "navLastOfMonth",
+    minWidth: 120,
+    renderCell: (params) => {
+      return params.value ? formatNumber(Number(params.value.toFixed(2))) : "-";
+    },
   },
 ];
