@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     START_DATE: start_date
   };
 
-  return new Promise((resolve) => {
+  return new Promise<Response>((resolve) => {
     exec('python3 backtest_3_strategies_v2.py', { cwd: workingDir, env }, async (error, stdout, stderr) => {
       if (error) {
         console.error(`Error executing backtest script: ${error}`);

@@ -1,8 +1,17 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs-extra';
+import fs from 'fs/promises';
 import path from 'path';
 
 const PISCADA_TASKS_PATH = process.env.PISCADA_TASKS_PATH || '';
+
+async function pathExists(p: string) {
+  try {
+    await fs.access(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export async function PUT(
   request: Request,
@@ -16,11 +25,11 @@ export async function PUT(
     // fileName can now be "definition/task.md"
     const filePath = path.join(folderPath, fileName);
 
-    if (!(await fs.pathExists(folderPath))) {
+    if (!(await pathExists(folderPath))) {
       return NextResponse.json({ error: 'Task folder not found' }, { status: 404 });
     }
 
-    await fs.ensureDir(path.dirname(filePath));
+    await fs.mkdir(path.dirname(filePath), { recursive: true });
     await fs.writeFile(filePath, content);
 
     return NextResponse.json({ success: true });

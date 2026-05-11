@@ -1,9 +1,18 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs-extra';
+import fs from 'fs/promises';
 import path from 'path';
 import matter from 'gray-matter';
 
 const PISCADA_TASKS_PATH = process.env.PISCADA_TASKS_PATH || '';
+
+async function pathExists(p: string) {
+  try {
+    await fs.access(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export async function OPTIONS() {
   return new Response(null, {
@@ -27,7 +36,7 @@ export async function POST(
     const rawTaskPath = path.join(folderPath, 'raw-task.md');
     const brainstormPath = path.join(folderPath, 'brainstorm.md');
 
-    if (!(await fs.pathExists(rawTaskPath))) {
+    if (!(await pathExists(rawTaskPath))) {
       return NextResponse.json({ error: 'Task requirement not found' }, { status: 404 });
     }
 

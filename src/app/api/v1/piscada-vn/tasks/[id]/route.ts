@@ -1,9 +1,17 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs-extra';
+import fs from 'fs/promises';
 import path from 'path';
-import matter from 'gray-matter';
 
 const PISCADA_TASKS_PATH = process.env.PISCADA_TASKS_PATH || '';
+
+async function pathExists(p: string) {
+  try {
+    await fs.access(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export async function GET(
   request: Request,
@@ -13,7 +21,7 @@ export async function GET(
     const { id } = await params;
     const folderPath = path.join(PISCADA_TASKS_PATH, id);
 
-    if (!(await fs.pathExists(folderPath))) {
+    if (!(await pathExists(folderPath))) {
       return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
@@ -23,7 +31,7 @@ export async function GET(
     // Scan subfolders
     for (const sub of subfolders) {
       const subPath = path.join(folderPath, sub);
-      if (await fs.pathExists(subPath)) {
+      if (await pathExists(subPath)) {
         const items = await fs.readdir(subPath);
         for (const item of items) {
           if (item.endsWith('.md')) {
