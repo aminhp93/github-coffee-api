@@ -5,13 +5,13 @@ export async function POST(request: Request) {
   const { data, range = '2026' } = body;
 
   // Extract base parameters from interactive data
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const incomeRow = data.find((r: Record<string, any>) => r.category.includes('Salary'));
-  const mortgageRow = data.find((r: Record<string, any>) => r.category.includes('Mortgage'));
-  const insuranceRow = data.find((r: Record<string, any>) => r.category.includes('Insurance'));
-  const livingRow = data.find((r: Record<string, any>) => r.category.includes('Living'));
-  const sinkingRow = data.find((r: Record<string, any>) => r.category.includes('Sinking'));
-  const goldRow = data.find((r: Record<string, any>) => r.category.includes('Gold'));
+  interface FinanceRow { category: string; minh: number; nhi: number; }
+  const incomeRow = data.find((r: FinanceRow) => r.category.includes('Salary'));
+  const mortgageRow = data.find((r: FinanceRow) => r.category.includes('Mortgage'));
+  const insuranceRow = data.find((r: FinanceRow) => r.category.includes('Insurance'));
+  const livingRow = data.find((r: FinanceRow) => r.category.includes('Living'));
+  const sinkingRow = data.find((r: FinanceRow) => r.category.includes('Sinking'));
+  const goldRow = data.find((r: FinanceRow) => r.category.includes('Gold'));
 
   const baseHusbandSalary = incomeRow?.minh || 58.0;
   const baseWifeSalary = incomeRow?.nhi || 13.0;
