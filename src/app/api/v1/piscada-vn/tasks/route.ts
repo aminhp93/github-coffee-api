@@ -1,13 +1,23 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs-extra';
+import fs from 'fs/promises';
+
 import path from 'path';
 import matter from 'gray-matter';
 
 const PISCADA_TASKS_PATH = process.env.PISCADA_TASKS_PATH || '';
 
+async function pathExists(p: string) {
+  try {
+    await fs.access(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function GET() {
   try {
-    if (!PISCADA_TASKS_PATH || !(await fs.pathExists(PISCADA_TASKS_PATH))) {
+    if (!PISCADA_TASKS_PATH || !(await pathExists(PISCADA_TASKS_PATH))) {
       return NextResponse.json({ error: 'Piscada tasks path not found' }, { status: 404 });
     }
 
@@ -29,15 +39,16 @@ export async function GET() {
       let taskData: Record<string, unknown> = { title: folder, date: '' };
       let bodySnippet = '';
 
-      if (await fs.pathExists(taskPath)) {
+      if (await pathExists(taskPath)) {
         const content = await fs.readFile(taskPath, 'utf-8');
         const { data, content: body } = matter(content);
         taskData = { ...taskData, ...data };
         bodySnippet = body.substring(0, 200);
-      } else if (await fs.pathExists(metadataPath)) {
-        const data = await fs.readJson(metadataPath);
+      } else if (await pathExists(metadataPath)) {
+        const content = await fs.readFile(metadataPath, 'utf-8');
+        const data = JSON.parse(content);
         taskData = { ...taskData, ...data };
-      } else if (await fs.pathExists(oldRawPath)) {
+      } else if (await pathExists(oldRawPath)) {
         const content = await fs.readFile(oldRawPath, 'utf-8');
         const { data, content: body } = matter(content);
         taskData = { ...taskData, ...data };
@@ -75,14 +86,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid title' }, { status: 400 });
     }
 
-    if (await fs.pathExists(folderPath)) {
+    if (await pathExists(folderPath)) {
       return NextResponse.json({ error: 'Task already exists' }, { status: 409 });
     }
 
     // Create 4 subfolders
     const subfolders = ['definition', 'explore', 'execute', 'review'];
     for (const sub of subfolders) {
-      await fs.ensureDir(path.join(folderPath, sub));
+      await fs.mkdir(path.join(folderPath, sub), { recursive: true });
     }
 
     const metadata = {
@@ -94,7 +105,7 @@ export async function POST(request: Request) {
       category: category || 'general',
     };
 
-    await fs.writeJson(path.join(folderPath, 'definition', '.metadata.json'), metadata, { spaces: 2 });
+    await fs.writeFile(path.join(folderPath, 'definition', '.metadata.json'), JSON.stringify(metadata, null, 2));
     await fs.writeFile(path.join(folderPath, 'definition', 'raw-task.md'), `# Draft Idea: ${title}\n\n`);
 
     return NextResponse.json({ success: true, path: folderName });

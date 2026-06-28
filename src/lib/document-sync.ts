@@ -1,8 +1,17 @@
-import fs from 'fs-extra';
+import fs from 'fs/promises';
 import path from 'path';
 import matter from 'gray-matter';
 
 const DOCUMENT_PATH = process.env.DOCUMENT_PATH || '';
+
+async function pathExists(p: string) {
+  try {
+    await fs.access(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export interface AreaNode {
   name: string;
@@ -16,7 +25,7 @@ export interface AreaNode {
 export async function getAreaStructure(subPath: string = 'area'): Promise<AreaNode[]> {
   const fullPath = path.join(DOCUMENT_PATH, subPath);
   
-  if (!(await fs.pathExists(fullPath))) {
+  if (!(await pathExists(fullPath))) {
     console.error(`Path does not exist: ${fullPath}`);
     return [];
   }
@@ -62,7 +71,7 @@ export async function getAreaStructure(subPath: string = 'area'): Promise<AreaNo
 export async function getDocumentContent(relativePath: string) {
   const fullPath = path.join(DOCUMENT_PATH, relativePath);
   
-  if (!(await fs.pathExists(fullPath))) {
+  if (!(await pathExists(fullPath))) {
     throw new Error(`File not found: ${relativePath}`);
   }
 

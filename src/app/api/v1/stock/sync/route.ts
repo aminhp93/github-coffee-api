@@ -12,7 +12,7 @@ export async function POST(): Promise<Response> {
     return NextResponse.json({ error: 'Sync script not found' }, { status: 404 });
   }
 
-  return new Promise((resolve) => {
+  return new Promise<Response>((resolve) => {
     // We use python3 explicitly
     exec('python3 weekend_sync.py', { cwd: workingDir }, (error, stdout, stderr) => {
       if (error) {
