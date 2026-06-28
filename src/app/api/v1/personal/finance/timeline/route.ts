@@ -5,12 +5,13 @@ export async function POST(request: Request) {
   const { data, range = '2026' } = body;
 
   // Extract base parameters from interactive data
-  const incomeRow = data.find((r: any) => r.category.includes('Salary'));
-  const mortgageRow = data.find((r: any) => r.category.includes('Mortgage'));
-  const insuranceRow = data.find((r: any) => r.category.includes('Insurance'));
-  const livingRow = data.find((r: any) => r.category.includes('Living'));
-  const sinkingRow = data.find((r: any) => r.category.includes('Sinking'));
-  const goldRow = data.find((r: any) => r.category.includes('Gold'));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const incomeRow = data.find((r: Record<string, any>) => r.category.includes('Salary'));
+  const mortgageRow = data.find((r: Record<string, any>) => r.category.includes('Mortgage'));
+  const insuranceRow = data.find((r: Record<string, any>) => r.category.includes('Insurance'));
+  const livingRow = data.find((r: Record<string, any>) => r.category.includes('Living'));
+  const sinkingRow = data.find((r: Record<string, any>) => r.category.includes('Sinking'));
+  const goldRow = data.find((r: Record<string, any>) => r.category.includes('Gold'));
 
   const baseHusbandSalary = incomeRow?.minh || 58.0;
   const baseWifeSalary = incomeRow?.nhi || 13.0;
@@ -99,7 +100,7 @@ export async function POST(request: Request) {
     // BHXH 1 Lan Calculation
     // Amount = 2 * MBQTL * YearsAfter2014
     const mbqtl = totalSalaryPaid / accumulatedMonths;
-    let bhxhYears = accumulatedMonths / 12;
+    const bhxhYears = accumulatedMonths / 12;
     // Rounding: 1-6mo = 0.5yr, 7-11mo = 1yr
     const remainingMo = accumulatedMonths % 12;
     let roundedYears = Math.floor(bhxhYears);

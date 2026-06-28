@@ -89,8 +89,8 @@ Proceed with Approach B. Focus on clarity and maintainability.
         }
       }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error in brainstorming:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }

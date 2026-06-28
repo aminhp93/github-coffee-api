@@ -12,7 +12,7 @@ export async function GET() {
     }
 
     const folders = await fs.readdir(PISCADA_TASKS_PATH);
-    const tasks = [];
+    const tasks: Record<string, unknown>[] = [];
 
     for (const folder of folders) {
       if (folder.startsWith('.')) continue;
@@ -26,7 +26,7 @@ export async function GET() {
       const metadataPath = path.join(folderPath, 'definition', '.metadata.json');
       const oldRawPath = path.join(folderPath, 'raw-task.md'); // Backward compatibility
       
-      let taskData: Record<string, any> = { title: folder, date: '' };
+      let taskData: Record<string, unknown> = { title: folder, date: '' };
       let bodySnippet = '';
 
       if (await fs.pathExists(taskPath)) {
@@ -52,11 +52,11 @@ export async function GET() {
       });
     }
 
-    tasks.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    tasks.sort((a, b) => ((b.date as string) || '').localeCompare((a.date as string) || ''));
     return NextResponse.json(tasks);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching piscada tasks:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }
 
@@ -98,8 +98,8 @@ export async function POST(request: Request) {
     await fs.writeFile(path.join(folderPath, 'definition', 'raw-task.md'), `# Draft Idea: ${title}\n\n`);
 
     return NextResponse.json({ success: true, path: folderName });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating task:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }

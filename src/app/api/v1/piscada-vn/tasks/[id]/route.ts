@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs-extra';
 import path from 'path';
-import matter from 'gray-matter';
 
 const PISCADA_TASKS_PATH = process.env.PISCADA_TASKS_PATH || '';
 
@@ -17,6 +16,7 @@ export async function GET(
       return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const files: any[] = [];
     const subfolders = ['definition', 'explore', 'execute', 'review'];
 
@@ -54,8 +54,8 @@ export async function GET(
     }
 
     return NextResponse.json({ id, files });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching task detail:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }

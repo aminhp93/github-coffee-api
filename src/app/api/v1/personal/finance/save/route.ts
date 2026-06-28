@@ -19,7 +19,8 @@ export async function POST(request: Request) {
   // In a real app, we'd use a more robust markdown parser/stringifier.
   // We will look for lines like "*   **Chồng (Minh):** 58.0" and replace the value.
 
-  data.forEach((row: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data.forEach((row: Record<string, any>) => {
     if (row.category === 'Salary / Income') {
       content = content.replace(/(\*\*Chồng \(Minh\):\*\* )\d+\.\d+/, `$1${row.minh.toFixed(1)}`);
       content = content.replace(/(\*\*Vợ \(Nhi\):\*\* )\d+\.\d+/, `$1${row.nhi.toFixed(1)}`);

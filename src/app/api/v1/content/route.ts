@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   try {
     const data = await getDocumentContent(filePath);
     return NextResponse.json(data);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 404 });
+  } catch (error: unknown) {
+    return NextResponse.json({ error: (error as Error).message }, { status: 404 });
   }
 }

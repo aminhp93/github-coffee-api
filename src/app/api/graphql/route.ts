@@ -97,15 +97,15 @@ const { handleRequest } = createYoga({
         esm: () => ({}),
         pmp: () => ({}),
         foresight: () => ({}),
-        kv: (_: any, { key }: { key: string }) => kvStore.get(key),
+        kv: (_: unknown, { key }: { key: string }) => kvStore.get(key),
       },
       Mutation: {
-        setKv: (_: any, { key, value, metadata }: { key: string; value: any; metadata?: any }) => 
+        setKv: (_: unknown, { key, value, metadata }: { key: string; value: unknown; metadata?: Record<string, unknown> }) => 
           kvStore.set(key, value, metadata),
       },
       ESMQuery: {
         stations: async () => (await kvStore.get('esm:stations')) || esm.getStations(),
-        metrics: async (_: any, { stationId }: { stationId: string }) => 
+        metrics: async (_: unknown, { stationId }: { stationId: string }) => 
           (await kvStore.get(`esm:metrics:${stationId}`)) || esm.getMetrics(stationId),
       },
       PMPQuery: {
@@ -121,10 +121,10 @@ const { handleRequest } = createYoga({
   fetchAPI: { Response },
 });
 
-export async function GET(request: Request, context: any) {
+export async function GET(request: Request, context: Record<string, unknown>) {
   return handleRequest(request, context);
 }
 
-export async function POST(request: Request, context: any) {
+export async function POST(request: Request, context: Record<string, unknown>) {
   return handleRequest(request, context);
 }

@@ -20,7 +20,8 @@ export const kvStore = {
     return data.value;
   },
 
-  async set(key: string, value: any, metadata: any = {}) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async set(key: string, value: unknown, metadata: any = {}) {
     if (!supabase) return null;
     
     const { data, error } = await supabase

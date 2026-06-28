@@ -3,7 +3,7 @@ import { exec } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 
-export async function POST() {
+export async function POST(request: Request): Promise<Response> {
   const documentPath = process.env.DOCUMENT_PATH || '/Users/aminhp93/personal/githubcoffee/document';
   const scriptPath = path.join(documentPath, 'area/knowledge/stock/tool/weekend_sync.py');
   const workingDir = path.join(documentPath, 'area/knowledge/stock/tool');

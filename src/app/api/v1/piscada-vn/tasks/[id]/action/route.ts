@@ -17,6 +17,7 @@ export async function POST(
     const metadataPath = path.join(folderPath, 'definition', '.metadata.json');
     const rawPath = path.join(folderPath, 'definition', 'raw-task.md');
     
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let metadata: any = {};
     if (await fs.pathExists(metadataPath)) {
       metadata = await fs.readJson(metadataPath);
@@ -66,8 +67,8 @@ export async function POST(
     }
 
     return NextResponse.json({ success: true, file: targetFile });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error executing task action:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }
