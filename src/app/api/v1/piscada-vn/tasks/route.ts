@@ -65,9 +65,15 @@ export async function POST(request: Request) {
     const { title, category, urgency, importance } = await request.json();
     if (!title) return NextResponse.json({ error: 'Title is required' }, { status: 400 });
 
+    const sanitizedTitle = title.replace(/[\/\\]/g, '-').replace(/\.\./g, '');
     const date = new Date().toISOString().split('T')[0];
-    const folderName = `[${date}] ${title}`;
-    const folderPath = path.join(PISCADA_TASKS_PATH, folderName);
+    const folderName = `[${date}] ${sanitizedTitle}`;
+    const folderPath = path.resolve(PISCADA_TASKS_PATH, folderName);
+
+    // Prevent Path Traversal
+    if (!folderPath.startsWith(path.resolve(PISCADA_TASKS_PATH))) {
+      return NextResponse.json({ error: 'Invalid title' }, { status: 400 });
+    }
 
     if (await fs.pathExists(folderPath)) {
       return NextResponse.json({ error: 'Task already exists' }, { status: 409 });
