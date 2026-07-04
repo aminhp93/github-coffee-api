@@ -10,7 +10,7 @@ export async function GET() {
     // Fetch all documents but omit the heavy 'content' column
     const { data, error } = await supabase
       .from('tech_knowledge')
-      .select('id, slug, title, type, level, date, created_at, updated_at')
+      .select('id, slug, title, type, level, tags, date, created_at, updated_at')
       .order('date', { ascending: false });
 
     if (error) {
