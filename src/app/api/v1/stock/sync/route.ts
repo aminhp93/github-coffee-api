@@ -34,6 +34,24 @@ export async function POST(): Promise<Response> {
     console.error('Error fetching max date from database:', err);
   }
 
+  const startTime = Date.now();
+  const saveLog = async (status: string, recordsSynced: number, errorMessage: string | null = null) => {
+    const duration = Date.now() - startTime;
+    try {
+      await supabase!
+        .from('stock_sync_logs')
+        .insert({
+          status,
+          records_synced: recordsSynced,
+          error_message: errorMessage,
+          run_duration_ms: duration,
+          sync_date: new Date().toISOString().split('T')[0]
+        });
+    } catch (err) {
+      console.error('Failed to save sync log:', err);
+    }
+  };
+
   console.log(`Syncing data: Last recorded date in DB is ${cutoffDate}`);
 
   // 2. Run the python script to fetch new records into the CSV file
@@ -41,6 +59,7 @@ export async function POST(): Promise<Response> {
     exec('python3 sync_data_incremental_2026.py', { cwd: workingDir }, async (error, stdout, stderr) => {
       if (error) {
         console.error(`Error executing sync script: ${error}`);
+        await saveLog('failed', 0, error.message);
         return resolve(NextResponse.json({ 
           success: false, 
           error: error.message,
@@ -51,6 +70,7 @@ export async function POST(): Promise<Response> {
       // 3. Read the CSV file and parse new rows >= cutoffDate
       try {
         if (!fs.existsSync(csvPath)) {
+          await saveLog('success', 0, 'Python sync finished, but CSV file was not found.');
           return resolve(NextResponse.json({ 
             success: true,
             stdout,
@@ -61,14 +81,14 @@ export async function POST(): Promise<Response> {
         const csvContent = await fs.promises.readFile(csvPath, 'utf-8');
         const lines = csvContent.split('\n');
         const headers = lines[0].trim().split(',');
-        const records: any[] = [];
+        const records: Record<string, string | number>[] = [];
 
         for (let i = 1; i < lines.length; i++) {
           const line = lines[i].trim();
           if (!line) continue;
           
           const values = line.split(',');
-          const row: any = {};
+          const row: Record<string, string> = {};
           headers.forEach((header, idx) => {
             row[header] = values[idx];
           });
@@ -113,6 +133,8 @@ export async function POST(): Promise<Response> {
           syncedCount += chunk.length;
         }
 
+        await saveLog('success', syncedCount);
+
         resolve(NextResponse.json({ 
           success: true, 
           stdout, 
@@ -120,11 +142,13 @@ export async function POST(): Promise<Response> {
           message: `Sync completed successfully. Synced ${syncedCount} new records to database.` 
         }));
 
-      } catch (syncErr: any) {
+      } catch (syncErr: unknown) {
         console.error('Error uploading CSV to Supabase:', syncErr);
+        const errMsg = syncErr instanceof Error ? syncErr.message : String(syncErr);
+        await saveLog('failed', 0, errMsg);
         resolve(NextResponse.json({ 
           success: false, 
-          error: `Python sync succeeded, but database upload failed: ${syncErr.message}`,
+          error: `Python sync succeeded, but database upload failed: ${errMsg}`,
           stdout,
           stderr
         }, { status: 500 }));
