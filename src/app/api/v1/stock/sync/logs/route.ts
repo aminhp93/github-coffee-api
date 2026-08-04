@@ -7,11 +7,11 @@ export async function GET() {
   }
 
   try {
-    // Fetch all documents but omit the heavy 'content' column
     const { data, error } = await supabase
-      .from('tech_knowledge')
-      .select('id, slug, title, type, level, tags, date, created_at, updated_at')
-      .order('date', { ascending: false });
+      .from('stock_sync_logs')
+      .select('id, sync_date, status, records_synced, error_message, run_duration_ms, created_at')
+      .order('created_at', { ascending: false })
+      .limit(30);
 
     if (error) {
       throw error;
@@ -19,7 +19,7 @@ export async function GET() {
 
     return NextResponse.json(data);
   } catch (error: unknown) {
-    console.error('Error fetching tech knowledge list:', error);
-    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+    console.error('Error fetching stock sync logs:', error);
+    return NextResponse.json({ error: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
 }

@@ -41,7 +41,8 @@ export async function GET() {
         title: data.title || slug.replace(/-/g, ' '),
         content: content.trim(),
         type: data.type || 'Article',
-        level: data.level || 'Fundamental',
+        level: data.level || 'Level 1',
+        tags: data.tags || [],
         date: data.date || new Date().toISOString().split('T')[0],
       });
     }

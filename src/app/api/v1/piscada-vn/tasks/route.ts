@@ -35,12 +35,18 @@ export async function GET() {
       const taskPath = path.join(folderPath, 'definition', 'task.md');
       const metadataPath = path.join(folderPath, 'definition', '.metadata.json');
       const oldRawPath = path.join(folderPath, 'raw-task.md'); // Backward compatibility
+      const workspaceTaskPath = path.join(folderPath, 'task.md'); // Support githubcoffee-workspace/tasks/task.md
       
       let taskData: Record<string, unknown> = { title: folder, date: '' };
       let bodySnippet = '';
 
       if (await pathExists(taskPath)) {
         const content = await fs.readFile(taskPath, 'utf-8');
+        const { data, content: body } = matter(content);
+        taskData = { ...taskData, ...data };
+        bodySnippet = body.substring(0, 200);
+      } else if (await pathExists(workspaceTaskPath)) {
+        const content = await fs.readFile(workspaceTaskPath, 'utf-8');
         const { data, content: body } = matter(content);
         taskData = { ...taskData, ...data };
         bodySnippet = body.substring(0, 200);
