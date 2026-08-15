@@ -1,0 +1,72 @@
+// Prisma Schema for Personal Ecosystem Platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum GapStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  SKIPPED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  logs      DailyLog[]
+}
+
+model GapItem {
+  id          String    @id
+  title       String
+  description String
+  category    String
+  status      GapStatus @default(TODO)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  logs        DailyLog[]
+}
+
+model DailyLog {
+  id          String   @id @default(uuid())
+  gapItemId   String
+  description String
+  hours       Float    @default(1.0)
+  loggedAt    DateTime @default(now())
+  userId      String?
+  gapItem     GapItem  @relation(fields: [gapItemId], references: [id])
+  user        User?    @relation(fields: [userId], references: [id])
+}
+
+model DropshipMilestone {
+  id          String   @id
+  month       String
+  focus       String
+  targetMetric String
+  status      GapStatus @default(TODO)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ReadingNote {
+  id        String   @id @default(uuid())
+  title     String
+  topic     String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
