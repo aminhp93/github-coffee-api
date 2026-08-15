@@ -52,12 +52,27 @@ const { handleRequest } = createYoga({
       type Mutation {
         setKv(key: String!, value: JSON!, metadata: JSON): JSON
 
+        # Authentication Mutation (API Login)
+        login(username: String!, password: String!): AuthPayload!
+
         # Roadmap Mutations
         logDailyTask(gapItemId: String!, description: String!, hours: Float): DailyLog!
         updateGapItemStatus(gapItemId: String!, status: String!): GapItem!
 
         # Dropship Mutations
         saveReadingNote(title: String!, topic: String!, content: String!): ReadingNote!
+      }
+
+      type AuthPayload {
+        token: String!
+        user: UserPayload!
+      }
+
+      type UserPayload {
+        id: ID!
+        email: String!
+        name: String!
+        role: String!
       }
 
       type GapItem {
@@ -257,6 +272,37 @@ const { handleRequest } = createYoga({
       Mutation: {
         setKv: (_: unknown, { key, value, metadata }: { key: string; value: unknown; metadata?: Record<string, unknown> }) =>
           kvStore.set(key, value, metadata),
+
+        login: async (_: unknown, { username, password }: { username: string; password: string }) => {
+          // Demo valid credentials: admin / admin123 or user / user123
+          if ((username === 'admin' || username === 'aminhp') && (password === 'admin123' || password === 'auth')) {
+            const token = 'jwt-session-token-' + Date.now();
+            return {
+              token,
+              user: {
+                id: 'user-001',
+                email: 'aminhp@norvin.vn',
+                name: 'Minh (Platform Lead)',
+                role: 'ADMIN',
+              },
+            };
+          }
+
+          if (username === 'user' && password === 'user123') {
+            const token = 'jwt-session-token-' + Date.now();
+            return {
+              token,
+              user: {
+                id: 'user-002',
+                email: 'user@local.local',
+                name: 'Demo Member',
+                role: 'USER',
+              },
+            };
+          }
+
+          throw new Error('Invalid username or password. (Try username: admin, password: admin123)');
+        },
 
         logDailyTask: async (_: unknown, { gapItemId, description, hours = 1.0 }: { gapItemId: string; description: string; hours?: number }) => {
           const logEntry = {
