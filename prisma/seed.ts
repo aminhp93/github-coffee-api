@@ -1,6 +1,12 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-const prisma = new PrismaClient();
+const connectionString =
+  process.env.DATABASE_URL ||
+  'postgresql://postgres:postgrespassword@localhost:5432/githubcoffee?schema=public';
+
+const adapter = new PrismaPg({ connectionString });
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log('🌱 Starting 100% Real PostgreSQL Database Seeding...');
@@ -60,7 +66,7 @@ async function main() {
   }
   console.log('✅ Seeded 6 Real Dropship Milestones into PostgreSQL');
 
-  console.log('🚀 Seeding Completed Successfully!');
+  console.log('🚀 100% Real Database Seeding Completed Successfully!');
 }
 
 main()
