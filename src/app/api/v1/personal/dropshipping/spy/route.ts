@@ -1,7 +1,97 @@
 import { NextResponse } from 'next/server';
 
+// Real revenue/traffic estimate via Apify "Shopify Store Analyzer" actor
+// (apivault_labs/shopify-store-analyzer, $7/1000 stores, https://apify.com/apivault_labs/shopify-store-analyzer).
+// This replaces the previous domain-checksum formula. If APIFY_API_TOKEN is not
+// configured, or the actor call fails, we report `available: false` instead of
+// fabricating numbers.
+async function fetchApifyRevenueEstimate(domainHost: string, includeRaw: boolean) {
+  const apifyToken = process.env.APIFY_API_TOKEN;
+  if (!apifyToken) {
+    return { available: false, reason: 'APIFY_API_TOKEN chưa được cấu hình trên server' };
+  }
+
+  try {
+    const actorId = 'apivault_labs~shopify-store-analyzer';
+    const apifyRes = await fetch(
+      `https://api.apify.com/v2/actors/${actorId}/run-sync-get-dataset-items?token=${encodeURIComponent(apifyToken)}&timeout=90`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mode: 'analyze',
+          storeUrls: [`https://${domainHost}`],
+          conversionRate: 2.4,
+          productSampleSize: 0,
+          extractTraffic: true,
+          extractRevenueEstimate: true,
+          extractTechStack: false,
+          extractProducts: false,
+        }),
+      }
+    );
+
+    if (!apifyRes.ok) {
+      return { available: false, reason: `Apify API trả lỗi HTTP ${apifyRes.status}` };
+    }
+
+    const items = await apifyRes.json();
+    const item = Array.isArray(items) ? items[0] : null;
+    if (!item) {
+      return { available: false, reason: 'Apify không trả về dữ liệu cho domain này (có thể không phải Shopify store)' };
+    }
+
+    // Field names are best-effort mapped from Apify's documented schema; the
+    // actor may rename fields over time, so we fall back across a couple of
+    // plausible variants and surface `raw` (via ?debug=1) to re-map if needed.
+    const monthlyRevenueUsd =
+      item?.revenue_estimate?.monthly_revenue_usd_est ??
+      item?.revenueEstimate?.monthlyRevenueUsd ??
+      null;
+    const annualRevenueUsd =
+      item?.revenue_estimate?.annualized_revenue_usd_est ??
+      item?.revenueEstimate?.annualRevenueUsd ??
+      (typeof monthlyRevenueUsd === 'number' ? monthlyRevenueUsd * 12 : null);
+    const monthlyVisits =
+      item?.traffic?.monthly_visits ??
+      item?.traffic?.monthlyVisits ??
+      null;
+    const globalRank =
+      item?.traffic?.global_rank ??
+      item?.traffic?.globalRank ??
+      null;
+    const trafficSources =
+      item?.traffic?.traffic_sources ??
+      item?.traffic?.trafficSources ??
+      null;
+
+    if (monthlyRevenueUsd == null && monthlyVisits == null) {
+      return {
+        available: false,
+        reason: 'Apify trả về dữ liệu nhưng thiếu trường revenue/traffic (schema actor có thể đã đổi)',
+        raw: includeRaw ? item : undefined,
+      };
+    }
+
+    return {
+      available: true,
+      source: 'apify:apivault_labs/shopify-store-analyzer',
+      monthlyRevenueUsd,
+      annualRevenueUsd,
+      monthlyVisits,
+      globalRank,
+      trafficSources,
+      raw: includeRaw ? item : undefined,
+    };
+  } catch (error: any) {
+    console.warn(`Apify revenue estimate failed for ${domainHost}`, error);
+    return { available: false, reason: error?.message || 'Apify request failed' };
+  }
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
+  const includeRaw = searchParams.get('debug') === '1';
   let rawDomain = searchParams.get('domain') || searchParams.get('url') || '';
 
   if (!rawDomain) {
@@ -109,6 +199,10 @@ export async function GET(request: Request) {
     const minPrice = prices.length ? Math.min(...prices).toFixed(2) : 'N/A';
     const maxPrice = prices.length ? Math.max(...prices).toFixed(2) : 'N/A';
 
+    // 3. Revenue/Traffic estimate from a real third-party panel (Apify), not a
+    // fabricated formula. See fetchApifyRevenueEstimate() above.
+    const revenueEstimate = await fetchApifyRevenueEstimate(domainHost, includeRaw);
+
     return NextResponse.json({
       success: true,
       domain: domainHost,
@@ -123,7 +217,8 @@ export async function GET(request: Request) {
         priceRange: `$${minPrice} - $${maxPrice}`,
         newestProductDate: realProducts[0]?.created_at ? new Date(realProducts[0].created_at).toLocaleDateString() : 'N/A'
       },
-      products: realProducts
+      products: realProducts,
+      revenueEstimate
     });
 
   } catch (error: any) {
